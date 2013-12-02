@@ -4,7 +4,6 @@ RESEARCH
 
 Goal : Establish an algorithm that implements heuristics in the holistic DP by interleaving them with the current algorithm and using super vertices.
 
-
 ———————————————
 UNARY OPERATORS
 ———————————————
@@ -16,19 +15,39 @@ BINARY OPERATORS
 ————————————————
 However, when we add binary operators into the mix, we do not really know how to proceed. Here is what we know.
 
-Assumptions :
-	-	Plans will eventually be sent to sources which have their own query optimizers therefore there is no point in optimizing a query in the distributor if all of its elements are destined to the same source, unless that source is the mediator.
-	-	We know how to linearly choose the best plan for a set of purely unary operators.
-	-	When a join is condensing, it is always preferable to include it in the same source as its children in the dependency graph.
-	-	We do not consider execution cost of operator. Therefore we only want to minimize transfer time across sources.
-
 Tools available to generate plans / super vertices : 
 	-	approximate size of the input and output tables for each operator for a given plan (in other words, only if we know the size of the path) [dynamic]
 	-	knowledge of the degree of selectivity of an operator (and thus knowledge whether an operator is condensing or not),regardless of plans [static]
 	-	sources, physical impls (order, materialization, implementation…), arity and type of each operator [static]
 	-	Any static information we can use in a pre processing phase. Any dynamically retrieved information can only be use during the iterations of the holistic DP.
 
+Assumptions :
+	-	Plans will eventually be sent to sources which have their own query optimizers therefore there is no point in optimizing a query in the distributor if all of its elements are destined to the same source, unless that source is the mediator.
+	-	We know how to linearly choose the best plan for a set of purely unary operators.
+	-	When a join is condensing, it is always preferable to include it in the same source as its children in the dependency graph.
+	-	We do not consider execution cost of operator. Therefore we only want to minimize transfer time across sources.
+	-	Given that we know how to deal with unary operators statically, we deal with them before the holistic DP in a preprocessing phase.
+	-	Transfer cost is equal among sources for a given data size (cost of moving 4MB from a to b is the same as moving 4MB from c to d).
+
 Situations and problems :
+	-	G is the dependency graph.
+	-	Assuming proper join order :
+		-	Consider condensing binary operator b with two incoming edges from c1 and c2 in G. c1 and c2 are super vertices, but c1 has an edge to some other unary operator o which may or may not only be executed in some different source (but is not part of super vertex c1). Can we put c1,c2 and b in a super vertex v with an outgoing edge to o? In other words, can we be certain that :
+			-	transfer_cost(v,o) <= transfer_cost(c1,o) + transfer_cost(o,b) + transfer_cost(c2,b) [putting o after v is always better than putting o between c1 and b]?
+			-	We know that b is condensing, therefore transfer_cost(v,o) <= transfer_cost(c1,b)+transfer_cost(c2,b) [where all operator may be on different sources]. Therefore, we want to know if transfer_cost(c1,b) <= transfer_cost(c1,o) + transfer_cost(o,b).
+			-	Given the equal transfer cost assumption, transfer_cost(c1,b) = transfer_cost(c1,o), therefore since cost is always positive, the equality above is true and therefore it is always better to put c1,c2 and b in a super vertex v with an outgoing edge to o.
+			-	As a result, we can statically move up operators like o and create super vertices b,c1,c2 with an edge to o.
+		-	Consider binary operators b1, b2 such that b1 has incoming edges from b2,c3 and b2 has incoming edges from c1,c2; and b1,b2 cannot be re-ordered (may not be of the same type). 
 
 
 
+
+________________________________________________________________________________________________________________________________________________________________________________________________________
+
+Extra stuff
+
+——————————
+JOIN TYPES
+——————————
+	-	For a given binary operator type, sources available for that operator are always the same (we could expect this to be true if binary operators do not contain UDFs). Useful for merging.
+	-	Our current algorithm does not re-order joins of different types (it leaves them in the order in which they were in the initial plan).
