@@ -2,6 +2,8 @@ Sunday December 1st 2013:
 
 RESEARCH
 
+Recall last meeting : Define option vs dependency graph to Yannis. We agreed on the heuristics we could use (recall heuristics), we discussed the holistic DP and the super vertex semantics and how they could be combined. We realized the shortcomings of attempting to construct super vertices in an option graph.
+
 Goal : Establish an algorithm that implements heuristics in the holistic DP by interleaving them with the current algorithm and using super vertices.
 
 ———————————————
@@ -9,19 +11,26 @@ UNARY OPERATORS
 ———————————————
 We already know how to obtain this algorithm when considering only unary operators. 
 
-
 ————————————————
 BINARY OPERATORS
 ————————————————
 However, when we add binary operators into the mix, we do not really know how to proceed. Here is what we know.
 
-Tools available to generate plans / super vertices : 
+1)Tools available to generate plans / super vertices : 
 	-	approximate size of the input and output tables for each operator for a given plan (in other words, only if we know the size of the path) [dynamic]
 	-	knowledge of the degree of selectivity of an operator (and thus knowledge whether an operator is condensing or not),regardless of plans [static]
 	-	sources, physical impls (order, materialization, implementation…), arity and type of each operator [static]
 	-	Any static information we can use in a pre processing phase. Any dynamically retrieved information can only be use during the iterations of the holistic DP.
 
-Assumptions :
+2) Naming conventions :
+	-	G is the dependency graph.
+	-	The « bottom » of the graph are the scans and input less betas of the graph.
+	-	The « top » of the graph is anything above it.
+	-	If u has an outgoing edge to v in G, then we say v is on « top » of u.
+	-	Conservative source compatibility: b source compatible with a iff a \subseteq b.
+	-	Lax source compatibility : b source compatible with a iff a \cap b \neq \emptyset.
+	
+3) Assumptions :
 	-	Plans will eventually be sent to sources which have their own query optimizers therefore there is no point in optimizing a query in the distributor if all of its elements are destined to the same source, unless that source is the mediator.
 	-	We know how to linearly choose the best plan for a set of purely unary operators.
 	-	When a join is condensing, it is always preferable to include it in the same source as its children in the dependency graph.
@@ -29,25 +38,76 @@ Assumptions :
 	-	Given that we know how to deal with unary operators statically, we deal with them before the holistic DP in a preprocessing phase.
 	-	Transfer cost is equal among sources for a given data size (cost of moving 4MB from a to b is the same as moving 4MB from c to d).
 
-Situations and problems :
-	-	G is the dependency graph.
-	-	Assuming proper join order :
-		-	Consider condensing binary operator b with two incoming edges from c1 and c2 in G. c1 and c2 are super vertices, but c1 has an edge to some other unary operator o which may or may not only be executed in some different source (but is not part of super vertex c1). Can we put c1,c2 and b in a super vertex v with an outgoing edge to o? In other words, can we be certain that :
-			-	transfer_cost(v,o) <= transfer_cost(c1,o) + transfer_cost(o,b) + transfer_cost(c2,b) [putting o after v is always better than putting o between c1 and b]?
-			-	We know that b is condensing, therefore transfer_cost(v,o) <= transfer_cost(c1,b)+transfer_cost(c2,b) [where all operator may be on different sources]. Therefore, we want to know if transfer_cost(c1,b) <= transfer_cost(c1,o) + transfer_cost(o,b).
-			-	Given the equal transfer cost assumption, transfer_cost(c1,b) = transfer_cost(c1,o), therefore since cost is always positive, the equality above is true and therefore it is always better to put c1,c2 and b in a super vertex v with an outgoing edge to o.
-			-	As a result, we can statically move up operators like o and create super vertices b,c1,c2 with an edge to o.
-		-	Consider binary operators b1, b2 such that b1 has incoming edges from b2,c3 and b2 has incoming edges from c1,c2; and b1,b2 cannot be re-ordered (may not be of the same type). 
+4) Situations and problems :
+
+a) Assuming proper join order.These results can be used statically:
+
+	-	Consider condensing binary operator b with two incoming edges from c1 and c2 in G. c1 and c2 are super vertices, but c1 has an edge to some other unary operator o which may or may not only be executed in some different source (but is not part of super vertex c1). Can we put c1,c2 and b in a super vertex v with an outgoing edge to o? In other words, can we be certain that :
+		-	transfer_cost(v,o) <= transfer_cost(c1,o) + transfer_cost(o,b) + transfer_cost(c2,b) [putting o after v is always better than putting o between c1 and b]?
+		-	We know that b is condensing, therefore transfer_cost(v,o) <= transfer_cost(c1,b)+transfer_cost(c2,b) [where all operator may be on different sources]. Therefore, we want to know if transfer_cost(c1,b) <= transfer_cost(c1,o) + transfer_cost(o,b).
+		-	Given the equal transfer cost assumption, transfer_cost(c1,b) = transfer_cost(c1,o), therefore since cost is always positive, the equality above is true and therefore it is always better to put c1,c2 and b in a super vertex v with an outgoing edge to o.
+		-	As a result, we can statically move up operators like o and create super vertices b,c1,c2 with an edge to o. This can be applied recursively.
+	-	Consider condensing binary operators b1, b2 such that b1 has incoming edges from b2,c3 and b2 has incoming edges from c1,c2; and b1,b2 cannot be re-ordered (may not be of the same type). In addition, assume that both binary operators are flexible, and that c1,c2 are source compatible but not with c3. Is it better to [option 1]put b1,b2,c3 into super vertex v1 with incoming edges from c1 and c2 OR [option 2] put c1,c,2,b2 into super vertex v2 with an outgoing edge to b1? In other words :
+		-	[option 1] transfer_cost(c1,v1) + transfer_cost(c2,v1) <= transfer_cost(v2,b1) [option 2]. Given condensing hypothesis, this is always false, therefore option 2 is always the best. We should always create super vertices from the bottom of the graph.
+	-	Consider condensing binary operator with two incoming edges from c1 and c2 in G. c1 and c2 are mutually source exclusive but both are source compatible with b. Is it better to form a super vertex v1 from c1 and b [option 1] or form a vertex from c2 and b [option 2]?
+		-	transfer_cost(c1,b) <= transfer_cost(c2,b). The best option
+
+	-	Consider merged n-ary operator m with n incoming edges from c1,…,cn and k outgoing edges to d1,…,dk. If all d1,…,dk are source compatible with m, all c1,…,cn are source compatible and m is condensing then we can create a super vertex v from c1,…,cn and m. If v is source compatible with d1,…,dk then we can create v2 from v1 and d1,…,dk. In other words, the construction of the super vertex v from a condensing merged n-ary operator is possible if d1,…,dk are source compatible (because we do not need the option of assigning different sources to the subjoins of m).
+
+CONCLUSION :
+	-	None of the above actions require any knowledge beyond the structure of the graph and the selectivity of operators. 
+	-	They can be applied on all operators and isolated joins which were not merged in the previous step, or merged joins with source compatible neighbors.
+	-	However, the resulting graph varies depending on the order in which we execute these transformations. We yet have to find the order which yields the biggest SV’s (which means less work for later).
+
+b) Assuming no proper join order.
+	
+REMARKS:	
+	-	It is not possible to use our split joins semantics statically, because it requires knowing what were the paths used by the inputs of an operator, and in the split join semantics these paths are not well defined.
+	-	It is not sufficient to consider merged joins altogether because the optimal plan may assign binary joins from that merged join to multiple sources.
+
+Assume now that all of the possible static transformations we have seen above to the graph have been applied to the fullest extent in a pre processing phase.
+
+We now apply the splitting operation on the merged joins as described prevision the option graph construction.
+
+How can use our heuristics and tools in order to further reduce the search space of the holistic DP?
 
 
+Situation and problem :
+
+1) Consider a 3-ary merged join m after the preprocessing phase. During that phase, condensing unary operators may have been added to m. Now we split m into cross products x1,x2 with incoming edges from c1,c2,c3 and outgoing edges to d1,…,dk (for which there exists i,j<=k such that di and dj are NOT source compatible).
+Cross products are never condensing, but we merge some of the selections in d1,…,dk and one of x1 or x2, we might obtain a condensing join operator b.
+We might as well obtain several condensing joins using various subsets of d1,…,dk, some of which may be more condensing than others.
+
+Consider some execution of the Holistic DP algorithm. Without loss of generality, assume c1,c2 and c3 are parts of plans p1, p2 and p3 previously computed. The possible plans that can be generated next are : 
+(x1,p1,p2),(x1,p2,p3),(x1,p1,p3),(x2,p1,p2),(x2,p2,p3),(x2,p1,p3) * 2
+
+NOTE: given that x1 and x2 are identical, we only need to generate 6 plans, not 12 (consider commutations).
+Now consider only 2 unary operators d1 and d2 and the joins that could possibly be generated from merging them with x1,x2 : b1 = (x1,d1) or (x2,d1), b2 = (x1,d2) or (x2,d2), b3 = (x1,d1,d2) or (x2,d1,d2). Recall that d1 and d2 are not source compatible. Therefore, b3 cannot be considered as unique entity. We are left with b1 and b2.
+
+Here are the following cases :
+	-	b1,b2 are not condensing : there is nothing we can do to speed up the process without adding heuristics.
+	-	b1,b2 are condensing, (WLOG) b1 more selective than b2 : we can form a super vertex using b1 and two sources (WLOG) p1,p2 such that Ain(b1) \subseteq Aout(p1) \cup Aout(p2), and remove all previously computed plans containing either p1 or p2. From the 12 plans produced in the previous step, we would keep only 1 for the next iterations of the algorithm : (b1,p1,p2) (given our assumptions, commutativity is irrelevant within super vertices).
+
+2) Consider the same situation as 1) but this time with only 1 unary operator d1. b1 = (x1,d1) or (x2,d1) is the only join that can be generated.
+
+Here are the following cases :
+	-	b1 is not condensing : nothing we can do.
+	-	b1 is condensing: we can form a super vertex using b1 and two sources (WLOG) p1,p2 such that Ain(b1) \subseteq Aout(p1) \cup Aout(p2), and remove all previously computed plans containing either p1 or p2.
+
+3) Consider the same situation as 1) but this time with 3 unary operators d1,d2,d3. Consider two sub cases :
+
+a) (WLOG) d1,d2 are source compatible but not with d3:
+Possibly generated joins 
 
 
-________________________________________________________________________________________________________________________________________________________________________________________________________
+Implementation :
+At each iteration of the holistic DP, we first attempt to create SV’s and then generate plans.
+__________________________________________________________________________________________
 
 Extra stuff
 
 ——————————
 JOIN TYPES
 ——————————
-	-	For a given binary operator type, sources available for that operator are always the same (we could expect this to be true if binary operators do not contain UDFs). Useful for merging.
+	-	For a given binary operator type, sources available for that operator are always the same (we could expect this to be true if binary operators do not contain UDFs). Useful for merging in construction of dependency graph.
 	-	Our current algorithm does not re-order joins of different types (it leaves them in the order in which they were in the initial plan).
