@@ -1,0 +1,34 @@
+Sunday December 1st 2013:
+
+RESEARCH
+
+Goal : Establish an algorithm that implements heuristics in the holistic DP by interleaving them with the current algorithm and using super vertices.
+
+
+———————————————
+UNARY OPERATORS
+———————————————
+We already know how to obtain this algorithm when considering only unary operators. 
+
+
+————————————————
+BINARY OPERATORS
+————————————————
+However, when we add binary operators into the mix, we do not really know how to proceed. Here is what we know.
+
+Assumptions :
+	-	Plans will eventually be sent to sources which have their own query optimizers therefore there is no point in optimizing a query in the distributor if all of its elements are destined to the same source, unless that source is the mediator.
+	-	We know how to linearly choose the best plan for a set of purely unary operators.
+	-	When a join is condensing, it is always preferable to include it in the same source as its children in the dependency graph.
+	-	We do not consider execution cost of operator. Therefore we only want to minimize transfer time across sources.
+
+Tools available to generate plans / super vertices : 
+	-	approximate size of the input and output tables for each operator for a given plan (in other words, only if we know the size of the path) [dynamic]
+	-	knowledge of the degree of selectivity of an operator (and thus knowledge whether an operator is condensing or not),regardless of plans [static]
+	-	sources, physical impls (order, materialization, implementation…), arity and type of each operator [static]
+	-	Any static information we can use in a pre processing phase. Any dynamically retrieved information can only be use during the iterations of the holistic DP.
+
+Situations and problems :
+
+
+
