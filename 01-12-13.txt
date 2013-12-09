@@ -50,7 +50,7 @@ a) Assuming proper join order.These results can be used statically:
 	-	Consider condensing binary operators b1, b2 such that b1 has incoming edges from b2,c3 and b2 has incoming edges from c1,c2; and b1,b2 cannot be re-ordered (may not be of the same type). In addition, assume that both binary operators are flexible, and that c1,c2 are source compatible but not with c3. Is it better to [option 1]put b1,b2,c3 into super vertex v1 with incoming edges from c1 and c2 OR [option 2] put c1,c,2,b2 into super vertex v2 with an outgoing edge to b1? In other words :
 		-	[option 1] transfer_cost(c1,v1) + transfer_cost(c2,v1) <= transfer_cost(v2,b1) [option 2]. Given condensing hypothesis, this is always false, therefore option 2 is always the best. We should always create super vertices from the bottom of the graph.
 	-	Consider condensing binary operator with two incoming edges from c1 and c2 in G. c1 and c2 are mutually source exclusive but both are source compatible with b. Is it better to form a super vertex v1 from c1 and b [option 1] or form a vertex from c2 and b [option 2]?
-		-	transfer_cost(c1,b) <= transfer_cost(c2,b). The best option
+		-	transfer_cost(c1,b) <= transfer_cost(c2,b). The best option is the one with lowest transfer cost. Now consider an n-ary operator m with inputs c1,…,cn. Let c1,…,ck be the set of source compatible inputs such that transfer_cost(c1)+…+transfer_cost(ck) is a large as possible. Then we should choose to form a super vertex v from c1,…,ck and m.
 
 	-	Consider merged n-ary operator m with n incoming edges from c1,…,cn and k outgoing edges to d1,…,dk. If all d1,…,dk are source compatible with m, all c1,…,cn are source compatible and m is condensing then we can create a super vertex v from c1,…,cn and m. If v is source compatible with d1,…,dk then we can create v2 from v1 and d1,…,dk. In other words, the construction of the super vertex v from a condensing merged n-ary operator is possible if d1,…,dk are source compatible (because we do not need the option of assigning different sources to the subjoins of m).
 
@@ -87,6 +87,7 @@ Now consider only 2 unary operators d1 and d2 and the joins that could possibly 
 Here are the following cases :
 	-	b1,b2 are not condensing : there is nothing we can do to speed up the process without adding heuristics.
 	-	b1,b2 are condensing, (WLOG) b1 more selective than b2 : we can form a super vertex using b1 and two sources (WLOG) p1,p2 such that Ain(b1) \subseteq Aout(p1) \cup Aout(p2), and remove all previously computed plans containing either p1 or p2. From the 12 plans produced in the previous step, we would keep only 1 for the next iterations of the algorithm : (b1,p1,p2) (given our assumptions, commutativity is irrelevant within super vertices).
+	-	b1 condensing while b2 is not : same as previous case.
 
 2) Consider the same situation as 1) but this time with only 1 unary operator d1. b1 = (x1,d1) or (x2,d1) is the only join that can be generated.
 
@@ -97,8 +98,20 @@ Here are the following cases :
 3) Consider the same situation as 1) but this time with 3 unary operators d1,d2,d3. Consider two sub cases :
 
 a) (WLOG) d1,d2 are source compatible but not with d3:
-Possibly generated joins 
+Possibly generated joins are b1=(x1,d1), b2=(x1,d2), b3 = (x1,d3), b4=(x1,d1,d2).
 
+Here are the following cases :
+	-	all bi’s not condensing : nothing we can do.
+	-	b3 is condensing but not b1,b2,b4 : we can form a super vertex using b3 and two sources (WLOG) p1,p2 such that Ain(b3) \subseteq Aout(p1) \cup Aout(p2), and remove all previously computed plans containing either p1 or p2.
+	-	b4 is condensing but not b1,b2,b3 : we can form a super vertex using b4 and two sources (WLOG) p1,p2 such that Ain(b4) \subseteq Aout(p1) \cup Aout(p2), and remove all previously computed plans containing either p1 or p2., as well as binary operators b1,b2 (since they use d1,d2 respectively).
+	-	b4 and b3 are condensing and WLOG b3 more selective than b4: we can form as super vertex v using b3,b4 and the three sources (where WLOG Ain(b3) \subseteq Aout(p1) \cup Aout(p2) and Ain(b4) \subseteq Aout(b3) \cup Aout(d3)) such that v = (b4,(b3,p1,p2),p3)
+	-	b4 is more selective than b1 or b2 regardless of b1 or b2, therefore we do not need to consider them.
+
+b) d1,d2,d3 are not source compatible :
+
+
+NOTE : 
+In a dynamic setting (super vertex construction happening during the plan generation) we are always using plans to build super vertices (and not vertices like we do in the static setting). « Atomic Plan » would maybe be a better naming for what is happening here. Plans are required because attributes have to be checked, which can only be done once paths are know.
 
 Implementation :
 At each iteration of the holistic DP, we first attempt to create SV’s and then generate plans.

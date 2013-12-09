@@ -1,0 +1,5 @@
+———
+LegoApp and Android
+———
+
+Made a simple picture app using a google example. Waiting on Mike for more details about what’s coming next.
