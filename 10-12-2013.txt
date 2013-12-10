@@ -1,0 +1,8 @@
+——————
+SEMI JOIN REDUCTION (CONTINUED)
+——————
+
+E) Distributed Databases TextBook
+
+Join Ordering in Distributed Query Processing. Includes information about semi join reduction in the case of multiple joins, which includes a lot of challenges of different nature. In the case of multiple distributed joins, there is an exponential number of semi join program, with at least one being optimal. We call it the full reducer.
+The textbook also covers the dynamic INGRES approach as well as how to combine it with the semi join reduction in detail, this is a must read but not what we are looking for.
