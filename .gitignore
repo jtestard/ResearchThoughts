@@ -1,0 +1,7 @@
+*.tex
+*.aux
+*.log
+.*.md.html
+.project
+*.synctex.gz
+*.pdf
