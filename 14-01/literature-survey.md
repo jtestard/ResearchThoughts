@@ -9,6 +9,13 @@ Scan the last 2-3 years of CIDR, SIGMOD, PVLDB, ICDE and see what papers have ap
 ## List of possibly interesting papers
 We have found 31 papers which are directly or indirectly to distributed data analytics and integration. Each paper is accompanied by a short description. Papers are sorted by conference and by topics.
 
+ - The canonical example from which other papers are compared is the 2011 CIDR Forward paper.
+ - The canonical objective is to produce an interface to supported natively unsupported queries or analytics which may come from various, heterogeneous sources. 
+ - Not all papers shown here share this objective
+ - Some papers, such as *How Achaeans Would Construct Columns in Troy*, attempt to implement unsupported functionality in existing systems in order to answer natively unsupported queries.
+ - Some papers describe help achieve a subset of the canonical objective, for instance *Data Curation at Scale: The Data Tamer System*.
+ - Some papers do not attempt to produce an interface to query data on heterogeneous source but might provide some insight.
+ 
 ### CIDR 2011
 <!--- 
 - *Data Consistency Properties and the Trade-offs in Commercial Cloud Storages: the Consumer's Perspective* : this paper investigates consistency guarantees vs performance offerings across several NoSQL platforms (Amazon SimpleDB, Microsoft Azure Table Storage, Google App Engine datastore, and Cassandra). 
@@ -25,6 +32,7 @@ We have found 31 papers which are directly or indirectly to distributed data ana
 ### CIDR 2013
  - *How Achaeans Would Construct Columns in Troy* : this papers describes how to implement column store functionality in relational database systems.  
  - *Data Curation at Scale: The Data Tamer System* : this papers describes how to integrate a new data source and semantically integrating it.
+
 <!--- 
 - *Data Integration and Data Exchange: It's Really About Time* : time-aware data integration of multiple sources concerned by one entity. 
 ---> 
