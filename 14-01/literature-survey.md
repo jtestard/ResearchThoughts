@@ -7,30 +7,38 @@ Scan the last 2-3 years of CIDR, SIGMOD, PVLDB, ICDE and see what papers have ap
  - TOPICS : distributed data integration, data analytics, non-SQL systems
 
 ## List of possibly interesting papers
-We have found 35 papers which are directly or indirectly to distributed data analytics and integration. Each paper is accompanied by a short description. Papers are sorted by conference and by topics.
+We have found 31 papers which are directly or indirectly to distributed data analytics and integration. Each paper is accompanied by a short description. Papers are sorted by conference and by topics.
 
 ### CIDR 2011
- - Data Consistency Properties and the Trade-offs in Commercial Cloud Storages: the Consumer's Perspective
- - Deuteronomy: Transaction Support for Cloud Data
- - The SQL-based All-Declarative FORWARD Web Application Development Framework
- - Ibis: A Provenance Manager for Multi-Layer Systems
- - Megastore: Providing Scalable, Highly Available Storage for Interactive Services
- - Here are my Data Files. Here are my Queries. Where are my Results?
- - Starfish: A Self-tuning System for Big Data Analytics
- - SwissBox: An Architecture for Data Processing Appliances
+<!--- 
+- *Data Consistency Properties and the Trade-offs in Commercial Cloud Storages: the Consumer's Perspective* : this paper investigates consistency guarantees vs performance offerings across several NoSQL platforms (Amazon SimpleDB, Microsoft Azure Table Storage, Google App Engine datastore, and Cassandra). 
+  *Ibis: A Provenance Manager for Multi-Layer Systems* : this paper describes a provenance manager which integrates metadata from heterogeneous sources. The manager handles integration of provenances with varying levels of granularity through a formal model described in the paper.
+---> 
+    
+ - *Deuteronomy: Transaction Support for Cloud Data* : this papers describes how to decompose functions from the database engine kernel into two components.
+   - The transactional component (TC) : manage transactions (concurrency control,undo/redo,...) without knowledge of physical location. 
+   - The data component (DC) : maintain data cache and uses wrapper-like access methods without knowledge of transactions.
+   This decomposition allows to transcend the location of data. It also guarantees ACID properties.
+ - *The SQL-based All-Declarative FORWARD Web Application Development Framework*
+ - *Here are my Data Files. Here are my Queries. Where are my Results?* : paper describe how to create systems for querying raw datafiles, without any extra information (schema,data storage format...). The system incrementally provides its own environment given the queries. As such, natively unsupported queries are handled by incrementally changing the system environment.   
 
 ### CIDR 2013
- - How Achaeans Would Construct Columns in Troy
- - Data Curation at Scale: The Data Tamer System
- - Data Integration and Data Exchange: It's Really About Time
+ - *How Achaeans Would Construct Columns in Troy* : this papers describes how to implement column store functionality in relational database systems.  
+ - *Data Curation at Scale: The Data Tamer System* : this papers describes how to integrate a new data source and semantically integrating it.
+<!--- 
+- *Data Integration and Data Exchange: It's Really About Time* : time-aware data integration of multiple sources concerned by one entity. 
+---> 
 
 ### ICDE 2011
- - Distributed Cube Materialization on Holistic Measures
+<!--- 
+ - Distributed Cube Materialization on Holistic Measures 
  - ES2: A Cloud Data Storage System for Supporting Both OLTP and OLAP
- - Extensibility and Data Sharing in Evolving Multi-Tenant Databases
+--->
+ 
+ - *Extensibility and Data Sharing in Evolving Multi-Tenant Databases* : this paper describes to handle data from heterogeneous sources within a relational database.
 
 ### ICDE 2012
- - Automatic Extraction of Structured Web Data with Domain Knowledge
+ - *Automatic Extraction of Structured Web Data with Domain Knowledge* : this paper focuses more on data extraction then querying, but 
 
 ### ICDE 2013
  - Interval Indexing and Querying on Key-Value Cloud Stores
