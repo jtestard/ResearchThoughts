@@ -84,7 +84,6 @@ We have found 31 papers which are directly or indirectly to distributed data ana
 
 #### First circle
  - The SQL-based All-Declarative FORWARD Framework [CIDR 2011]
- - hStorage-DB : Heterogeneity-aware Data Management to Exploit the full capability of Hybrid Storage Systems [VLDB 2012]
  - Scalable transactions across heterogeneous Key-value Data stores [VLDB 2013]
  - Materializing SQL queries in key-value stores [SIGMOD 2014]
 
@@ -101,25 +100,6 @@ We should first look at the four articles of the first circle and investigate ho
 
 Then, pick certain criteria and classify each framework according to that criteria. 
 
-#### The SQL-based All-Declarative FORWARD Framework
- - Problem :
-   - Database-driven Web Applications need a lot of plumbing code to be written even for a small amount of business logic.
-   - The state of the application has to be maintained across the three application layers :
-     - visual layer
-     - application logic layer
-     - database layer
-   - Each layer uses different languages, plumbing code is required to transform data objects from one representation to another in order to transfer data from one layer to the other.
-   - Modern web applications which use AJAX need specific plumbing code for each user interaction and on each layer.
- - Are we capable of making the developer's life easier by automating of all of this predictable, logic-independent plumbing code?
- - Solution : 
-   - Yes, through the use of SQL++, a variant of SQL, we only require the developer to define the logic of his application and we take care of all the plumbing code.
-   - By logic, we mean :
-     - what is the data? relational=(table name, schema)
-     - where it is located ? Main memory session, SQL databse, commercial web-service (facebook api, google api...), NoSQL key-value store...
-     - what logical operations should be applied to the data?
-     - where it should be displayed
-   - single language access
-
 #### Holistic Data Access Optimization for analytics report
  - In the previous paper, we develop a framework and language to help the developer focus on the logic of his application and minimize the plumbing code he is required to do. 
  - Following this, we also want to extend that framework in order to optimize the queries (including analytical queries) the developer writes in that language.
@@ -132,16 +112,6 @@ Then, pick certain criteria and classify each framework according to that criter
    - we integrate SQL, JSON and java sources. We extend our integration using wrappers.
    - we provide optimality given a set of sources and its query capabilities (we wish to do so).
  
-#### H-StorageDB : Heterogeneity-aware Data Management to Exploit the Full Capability of Hybrid Storage Systems
- - We do not know how to use properly heterogeneous storage systems.
- - We do a lot of things with heterogeneous systems sub-optimally even after a lot of human effort has been put in.
- - We do not try to change our heterogeneous system to a homogeneous one. Instead we want to take advantage of the capabilities of each storage device.
- - We have a framework designed for heterogeneous storage management, called hStorageDB.   
- - Using this framework, we can collect and use semantic information that is otherwise unavailable yet very important for the management of a heterogeneous system.
- - We have some performance analysis. Substantial
- - The heterogeneity mentioned in this paper is the heterogeneity of storage devices available to a database system, not the heterogeneity of data sources format and/or query capabilities.
- - The problem is fundamentally different, and a way of mapping this problem to our problem remains to be examined. 
-
 #### Scalable Transactions across Heterogeneous NoSQL Key-Value Data Stores
  - How to implement multi-item transactions (atomic, safe, reversible data state changes) in heterogeneous systems (data stores with heterogeneous formats).
  - The author explores existing solutions of how to implement mutli titem ACID transactions using cloud / NoSQL systems.
@@ -172,7 +142,37 @@ Then, pick certain criteria and classify each framework according to that criter
  - Both types of storage are integrated in a single database.
 
 #### Holistic Optimization by Prefetching results
+ - We want to optimize performance of database/web service backed applications by prefetching query results.
+ - Prefetching allows to start a query process before the results of the query are actually required in order to have the results readily available when the user needs them, without having to wait for them to arrive. This can greatly reduce latency in application which need to access remote data located on databases/web services.
+ - Problems may occur :
+   - Prefetches may be wasted and uses bandwith and computing power for nothing
+ - Up to now, prefetching has had limited value, because :
+   - it was limited to query access patterns, and often resulted in unnecessary prefetches.
+   - another approach was to analyze the program which would access the database in order to automatically insert the prefetch requests. The problem is that the use case of current applications such as web services, such program analysis cannot be done?
+ - We offer a solution which is applicable to called procedures(?) and avoids wasteful prefetches.
+ - Examples of query prefetching opportunities :
+ - The tool we develop rewrites java programs to integrate prefetching requests
+ - Background
+   - Prefetch Execution Model
+     - Cache keyed by tuple
+     - Control Flow Graph and Call Graph (for control flow analysis)
+ - Query Anticipability
+   - We use a technique called *anticipable expressions analysis* and use it to compute query anticipability, in other words : can we know for sure that this query will be called?
+   
 
 #### How Achaeans would construct columns in Troy
+ - Implement column store functionality in row-store DBMS without :
+   - requiring to change the source code (or even see it)
+   - hindering performance for complex queries (such as analytical queries)
+   - requiring different storage systems for different storing formats
+ - The author suggest the use of UDFs (User Defined Functions) to do the job :
+   - UDF can be used to enable column store functionality in an existing row store
+   - UDF syntax is very similar between most types of DBMS
+   - UDF functions can be optimized state-of-the-art query optimizers.
+ - Problems :
+   - User queries need to be (slightly) rewritten in order to use the UDF for data access.
+   
 
 #### Citrusleaf : Real-time NoSQL DB which preserves ACID 
+ - NoSQL distributed database with ACID properties and immediate consistency.
+ - 
