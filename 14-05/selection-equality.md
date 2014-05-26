@@ -1,6 +1,8 @@
 #Selection Equality
 
-### Intro
+## Intro
+
+//Selection pushdown mechanism description
 
  - Any predicate pushed down to the source should not result in failure, as this could prevent valid tuples to be processed by the middleware.
    - Rule of thumb : the selection at the source should return an error *if and only if* the same error is returned when the selection is processed at the middleware. 
@@ -10,7 +12,7 @@
    - Example : A comparison between complex values `a=b` in SQL++ would be translate into `deep-equal(a,b);` in JSONiq. 
 
 
-### Query Rewriters
+## Query Rewriters
 We now present the different rewriters used for selection equality. For each rewriter, we present its behavior when 1) comparing a variable with a literal, 2) comparing  a variable with another variable. Note that comparing two literals can be reduced to 1) by aliasing the first literal (plus it doesn't really make sense).  
 
 ###Complexity Rewriter
@@ -158,7 +160,7 @@ Sample output :
  
 #### Variable compared with variable
 
-Assume previous query, previous assumptions and previous output. Then each path can be evaluated as follows : 
+Assume previous query, previous assumptions and previous output. Then each path can be type checked as follows : 
 	
 	type(U1.user.profile.address.number) = number AND
 	type(U2.user.profile.address.number) = number AND
@@ -187,12 +189,56 @@ Notice that arrays and maps cannot be type-checked when comparing two variables 
  - A check exists for each navigation path that should evaluate to a scalar or a null.
  - Each path check is placed right before the type check for that navigation path.
  - Map keys and array indices need not be checked individually unless they should evaluate to a tuple. Only the entire map/array needs to be checked. Invalid keys or invalid indices will result in a false, not an error according to SQL++ semantics.
- - Checks are done at every node of the path navigation tree. If a subpath of the currently checked path has not been checked, then an additional check for that subpath is added.
- - Each navigation check is accompanied by a null check, unless a null is specifically required by the query. 
+ - Checks are done at every node of the path navigation tree. If a subpath of the currently checked path has not been checked, then an additional check for that subpath is added.  
  - Sample input is the output of the type-check rewriter.
  
 Sample Output (fragments):
 	
+	user != missing AND
+	user.profile != missing AND
+	user.profile.name != missing AND
+	type(user.profile.name) = string AND
+	user.profile.name = 'Jules Testard' AND
+	...
+	user.profile.address != missing AND
+	user.profile.address.number != missing AND
+	...
+	user.profile.phoneNumbers != missing AN
+	type(user.profile.phoneNumbers[1]) = number AND
+	user.profile.phoneNumbers[1] = 0607588079 AND
+	...
+	user.profile.hobbies != missing AND
+	user.profile.hobbies = {{ {'category' : 'sport','occupation' : 'surfing'} }} AND  
+	...
+	 
+ - Notice that when schema information is available, less navigation checks are required.
+ 
+#### Variables compared with another variable
+
+Assume previous query, previous assumptions and previous output. Then both paths are checked as follows (fragment) :
+
+	...
+	U1.user.profile.address != missing AND
+	U2.user.profile.address != missing AND
+	U1.user.profile.address.number != missing AND
+	U2.user.profile.address.number != missing AND
+	type(U1.user.profile.address.number) = number AND
+	type(U2.user.profile.address.number) = number AND
+	U1.user.profile.address.number = U2.user.profile.address.number AND
+	...
+
+### Null values Rewriter
+
+ - Assumes path checking has already happened.
+ - A null check is added right after each navigation check, unless a null is specifically required by the query.
+ - In some systems, null checks might be redundant with type checks. 
+
+#### Variable compared with another literal 
+
+Sample input is the output of the path navigation rewriter.
+
+Sample output (fragment) :  
+
 	user != missing AND
 	user != null AND
 	user.profile != missing AND
@@ -205,14 +251,19 @@ Sample Output (fragments):
 	user.profile.address != missing AND
 	user.profile.address != null AND
 	user.profile.address.number != missing AND
+	user.profile.address.number != null AND
 	...
 	user.profile.phoneNumbers != missing AN
-	user.profile.address != null AND
+	user.profile.phoneNumbers != null AND
 	type(user.profile.phoneNumbers[1]) = number AND
 	user.profile.phoneNumbers[1] = 0607588079 AND
 	...
 	user.profile.hobbies != missing AND
+	user.profile.hobbies != null AND
 	user.profile.hobbies = {{ {'category' : 'sport','occupation' : 'surfing'} }} AND  
-	...
-	 
- - Notice that when schema information is available, less navigation checks are required.
+
+## Data source wrappers
+
+### Data source wrapper description
+
+### Example on data sources
