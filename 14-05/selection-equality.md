@@ -1,8 +1,15 @@
 #Selection Equality
 
-## Intro
+## The problem
+ - We focus on selection because this is commonly the most selective type of operator, where pushing down work would likely bring the most benefit. 
+ - We focus on equality because this is the most common type of selection predicate.
+   - Less-than comparison is similar but introduces slightly more complexity.
+ - Consider join-less queries using a single remote source S, where P is a set of predicates in CNF.
+ - We want to push down as much work as possible to the source. 
 
-//Selection pushdown mechanism description
+### The process
+ 
+ - We decompose the selection predicates into   
 
  - Any predicate pushed down to the source should not result in failure, as this could prevent valid tuples to be processed by the middleware.
    - Rule of thumb : the selection at the source should return an error *if and only if* the same error is returned when the selection is processed at the middleware. 
