@@ -1,0 +1,39 @@
+AQL Commands :
+managix create
+managix start
+managix stop
+
+AQL QUERIES : 
+
+// Hello World Query
+
+
+// List Query
+INPUT : 
+let $messages := ['hi' , 'ho', 'hey']
+for $message in $messages
+return $message
+OUTPUT : 
+"hi"
+"ho"
+"hey"
+
+use dataverse TinySocial;
+create type UserType as closed {
+  "id" :         int32,
+  "name" :       string
+};
+create internal dataset Users(UserType) primary key id;
+
+insert into dataset
+
+
+// Simplest Query
+
+
+//Asterix is awesome
+for $praise in {{ "great", "brilliant", "awesome" }}
+return
+   string-concat(["AsterixDB is ", $praise])
+
+use dataverse ExternalFileDemo;
