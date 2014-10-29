@@ -52,7 +52,7 @@ Troubleshooting done :
  - I have verfied Java version (1.6) and PostgreSQL version (9.1).
 
 ###7
-I have attempted to run the Website eclipse configuration and have run into this error :
+I have attempted to run the IDE eclipse configuration and have run into this error :
 
     2014-10-29 14:55:54,083 ERROR edu.ucsd.forward.data.source.AbstractDataSource.(AbstractDataSource.java:105) - Encountered active transactions when closing data source: fpl_local_scope
     2014-10-29 14:55:54,090 ERROR edu.ucsd.forward.ide.Main.(Main.java:182) - Query path "username" is ambiguous. Matches were found in the following scopes: SQL++ query context, FPL context. file:/Users/julestestard/Projects/svn/forward/2014-09-26-asterix-wrapper/src/ide/target/classes/edu/ucsd/forward/ide/function/security/invite_user.sql (56:29-56:36)
@@ -67,19 +67,4 @@ Troubleshooting done :
  - I have verfied Java version (1.6) and PostgreSQL version (9.1).
 
 ##8
-JSTestDriver 
-
-    Exception in thread "main" com.google.jstestdriver.config.ConfigurationException: Unable to read configuration file.
-    	at com.google.jstestdriver.config.UserConfigurationSource.parse(UserConfigurationSource.java:57)
-    	at com.google.jstestdriver.embedded.JsTestDriverBuilder.setConfigurationSource(JsTestDriverBuilder.java:258)
-    	at com.google.jstestdriver.embedded.JsTestDriverBuilder.setDefaultConfiguration(JsTestDriverBuilder.java:95)
-    	at edu.ucsd.forward.JsTestDriverServer.defaultBuilder(JsTestDriverServer.java:120)
-    	at edu.ucsd.forward.JsTestDriverServer.getInstance(JsTestDriverServer.java:94)
-    	at edu.ucsd.forward.JsTestDriverRunner.<init>(JsTestDriverRunner.java:72)
-    	at edu.ucsd.forward.JsTestDriverRunner.<init>(JsTestDriverRunner.java:59)
-    	at edu.ucsd.forward.JsTestDriverRunner.main(JsTestDriverRunner.java:434)
-    Caused by: java.io.FileNotFoundException: /Users/julestestard/Projects/svn/forward/2014-09-26-asterix-wrapper/src/units\jsTestDriver.conf (No such file or directory)
-    	at java.io.FileInputStream.open(Native Method)
-    	at java.io.FileInputStream.<init>(FileInputStream.java:120)
-    	at com.google.jstestdriver.config.UserConfigurationSource.parse(UserConfigurationSource.java:53)
-    	... 7 more
+It seems that by running we `TestNG - All` we have a successful test suite run. Yay!
