@@ -147,8 +147,7 @@ In AQL, the symbols `"<" | ">" | "<=" | ">=" | "=" | "!=" | "~=" | "+" | "-" | "
 	SQLPPFromSingle		::=	SQLPPOperatorExpr "AS" VariableRef* ["AT" SQLPPOperatorExpr ]
 	SQLPPFromJoin		::=	SQLPPFromInnerJoin
 	#					|	SQLPPFromOuterJoin
-	SQLPPFromInnerJoin	::= ( "LEFT" | "RIGHT" | "FULL" ) 
-						"JOIN" SQLPPFromItem "ON" SQLPPOperatorExpr
+	SQLPPFromInnerJoin	::= "JOIN" SQLPPFromItem "ON" SQLPPOperatorExpr
 	# SQLPPFromOuterJoin	::= ( "LEFT" | "RIGHT" | "FULL" ) 
 	#					"JOIN" SQLPPFromItem "ON" SQLPPOperatorExpr
 	# SQLPPFromFlatten	::= SQLPPFromInFlatten
