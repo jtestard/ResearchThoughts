@@ -54,8 +54,8 @@ Restaurant review service dataset.
     		age : int32,
     		location : string,
     		interests : {
-    			venue_type : {{ venue : string }}, //Bar, Restaurant...
-	    		food_style : {{ category : string }} // Sushi, Tacos...
+    			venue_type : {{ venue : string }},
+	    		food_style : {{ category : string }}
     		}
     	},
 	    user_key : int32
@@ -68,7 +68,6 @@ Restaurant review service dataset.
 		venue_name : string,
 		venue_type : string,
 		food_style : string,
-		//pictures : {{binary}}* //optional
 	};
 	
     create internal dataset Users(UserType) primary key cust_key;

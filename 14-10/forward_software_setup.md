@@ -67,4 +67,4 @@ Troubleshooting done :
  - I have verfied Java version (1.6) and PostgreSQL version (9.1).
 
 ##8
-It seems that by running we `TestNG - All` we have a successful test suite run. Yay!
+It seems that by running the `TestNG - All` we have a successful run of the test suites for the query compiler. Yay!
