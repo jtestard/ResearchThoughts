@@ -98,8 +98,10 @@ public Pair<ILogicalOperator, LogicalVariable> visitFlworExpression(FLWOGRExpres
             // -------------------
             List<Mutable<ILogicalExpression>> writeExprList = new ArrayList<Mutable<ILogicalExpression>>(1);
             writeExprList.add(new MutableObject<ILogicalExpression>(new VariableReferenceExpression(resVar)));
+            // What is the data sink.
             ResultSetSinkId rssId = new ResultSetSinkId(metadataProvider.getResultSetId());
             ResultSetDataSink sink = new ResultSetDataSink(rssId, null);
+            // Here we create the top most element of the plan, the distribute operator.
             topOp = new DistributeResultOperator(writeExprList, sink);
             topOp.getInputs().add(new MutableObject<ILogicalOperator>(project));
         } else {
@@ -198,3 +200,41 @@ public Pair<ILogicalOperator, LogicalVariable> visitFlworExpression(FLWOGRExpres
  - Are all plans linear (or can we have operators with multiple children in the plan)?
  - What's the difference between resVar and p.second?
  - What is outputDatasetName?
+ - What is the data sink?
+ - What is the role of the distribute operator and should I have to care about it in my setting?
+ 
+
+### Example 
+
+#### Query
+```
+drop dataverse test if exists;
+create dataverse test;
+
+use dataverse test;
+
+create type myDataType as open {
+  id: int32
+}
+
+create dataset myData(myDataType)
+  primary key id;
+
+ load dataset myData using localfs
+ (("path"="127.0.0.1:///Users/julestestard/Development/eclipse-luna/workspace/asterixdb/asterix-sqlpp/sample.adm"),("format"="adm"));
+
+
+for $x in dataset myData
+return {
+    "id": $x.id
+};
+```
+
+#### Plan
+```
+distribute result [%0->$$2] -- |UNPARTITIONED|
+  project ([$$2]) -- |UNPARTITIONED|
+    assign [$$2] <- [function-call: asterix:open-record-constructor, Args:[AString: {id}, function-call: asterix:field-access-by-name, Args:[%0->$$0, AString: {id}]]] -- |UNPARTITIONED|
+      unnest $$0 <- function-call: asterix:dataset, Args:[AString: {myData}] -- |UNPARTITIONED|
+        empty-tuple-source -- |UNPARTITIONED|
+```
