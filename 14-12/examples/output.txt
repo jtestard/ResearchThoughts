@@ -1,0 +1,9 @@
+First query :
+{ "x": { "reading_id": 1, "sensor": 1, "co": [ 0.3d ] }, "y": { "reading_id": 1, "sensor": 1, "co": [ 0.3d ] } }
+{ "x": { "reading_id": 2, "sensor": 1, "co": [ 0.5d ] }, "y": { "reading_id": 2, "sensor": 1, "co": [ 0.5d , 0.7] } }
+{ "x": { "reading_id": 2, "sensor": 1, "co": [ 0.5d ] }, "y": { "reading_id": 3, "sensor": 2, "co": [ 0.5d , 0.7 ] } }
+{ "x": { "reading_id": 3, "sensor": 2, "co": [ 0.5d ] }, "y": { "reading_id": 2, "sensor": 1, "co": [ 0.5d , 0.7 ] } }
+{ "x": { "reading_id": 3, "sensor": 2, "co": [ 0.5d ] }, "y": { "reading_id": 3, "sensor": 2, "co": [ 0.5d , 0.7 ] } }
+
+Second query :
+Comparison for UNORDEREDLIST is not supported. [AlgebricksException]

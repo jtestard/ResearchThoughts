@@ -1,0 +1,39 @@
+drop dataverse Sensors if exists;
+create dataverse Sensors;
+use dataverse Sensors;
+
+create type CoReadingsType as open {
+   reading_id : int32,
+   sensor : int32,
+   co : [double]
+}
+
+create dataset co_readings(CoReadingsType) primary key reading_id;
+
+insert into dataset co_readings ({
+  "reading_id" : 1,
+  "sensor" : 1,
+  "co" : [0.3]
+});
+
+insert into dataset co_readings ({
+  "reading_id" : 2,
+  "sensor" : 1,
+  "co" : [0.5, 0.7]
+});
+
+insert into dataset co_readings ({
+  "reading_id" : 3,
+  "sensor" : 2,
+  "co" : [0.5, 0.7]
+});
+
+for $x in dataset co_readings
+for $y in dataset co_readings
+where $x.co = $y.co
+return {
+  "x" : $x,
+  "y" : $y
+} // Produces output expected if complex equality supported.
+
+{{1}} = {{1}} // produces an error.
