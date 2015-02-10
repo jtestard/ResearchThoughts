@@ -1,0 +1,727 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<TITLE>BNF for SQLPPRI.jj</TITLE>
+</HEAD>
+<BODY>
+<H1 ALIGN=CENTER>BNF for SQLPPRI.jj</H1>
+<H2 ALIGN=CENTER>TOKENS</H2>
+<TABLE>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;ASC: "asc"&gt;
+| &lt;AT: "at"&gt;
+| &lt;DATAVERSE: "dataverse"&gt;
+| &lt;DISTINCT: "distinct"&gt;
+| &lt;IN: "in"&gt;
+| &lt;LIMIT: "limit"&gt;
+| &lt;OFFSET: "offset"&gt;
+| &lt;UNION: "union"&gt;
+| &lt;WITH: "with"&gt;
+| &lt;USE: "use"&gt;
+| &lt;SELECT: "select"&gt;
+| &lt;FROM: "from"&gt;
+| &lt;WHERE: "where"&gt;
+| &lt;AS: "as"&gt;
+| &lt;JOIN: "join"&gt;
+| &lt;ON: "on"&gt;
+| &lt;INNER: "inner"&gt;
+| &lt;OUTER: "outer"&gt;
+| &lt;LEFT: "left"&gt;
+| &lt;RIGHT: "right"&gt;
+| &lt;FULL: "full"&gt;
+| &lt;MAP: "map"&gt;
+| &lt;HAVING: "having"&gt;
+| &lt;CORRELATE: "correlate"&gt;
+| &lt;ATTRIBUTE: "attribute"&gt;
+| &lt;GROUP: "group"&gt;
+| &lt;ELEMENT: "element"&gt;
+| &lt;FLATTEN: "flatten"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;GROUP_BY: "group" (" ")* "by"&gt;
+| &lt;ORDER_BY: "order" (" ")* "by"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;CARET: "^"&gt;
+| &lt;DIV: "/"&gt;
+| &lt;IDIV: "idiv"&gt;
+| &lt;MINUS: "-"&gt;
+| &lt;MOD: "%"&gt;
+| &lt;MUL: "*"&gt;
+| &lt;PLUS: "+"&gt;
+| &lt;LEFTPAREN: "("&gt;
+| &lt;RIGHTPAREN: ")"&gt;
+| &lt;LEFTBRACKET: "["&gt;
+| &lt;RIGHTBRACKET: "]"&gt;
+| &lt;LEFTARROW: "-&gt;"&gt;
+| &lt;RIGHTARROW: "&lt;-"&gt;
+| &lt;SEMICOLON: ";"&gt;
+| &lt;COLON: ":"&gt;
+| &lt;COMMA: ","&gt;
+| &lt;DOT: "."&gt;
+| &lt;QUES: "?"&gt;
+| &lt;LT: "&lt;"&gt;
+| &lt;GT: "&gt;"&gt;
+| &lt;LE: "&lt;="&gt;
+| &lt;GE: "&gt;="&gt;
+| &lt;EQ: "="&gt;
+| &lt;NE: "!="&gt;
+| &lt;SIMILAR: "~="&gt;
+| &lt;ASSIGN: ":="&gt;
+| &lt;AND: "and"&gt;
+| &lt;OR: "or"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;LEFTBRACE: "{"&gt; : DEFAULT
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;RIGHTBRACE: "}"&gt; : {
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;LEFTDBLBRACE: "{{"&gt; : IN_DBL_BRACE
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;IN_DBL_BRACE&gt; TOKEN : {
+&lt;RIGHTDBLBRACE: "}}"&gt; : {
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;INTEGER_LITERAL: (&lt;DIGIT&gt;)+&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;NULL: "null"&gt;
+| &lt;TRUE: "true"&gt;
+| &lt;FALSE: "false"&gt;
+| &lt;MISSING: "missing"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;#DIGIT: ["0"-"9"]&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;DOUBLE_LITERAL: &lt;DIGITS&gt; | &lt;DIGITS&gt; ("." &lt;DIGITS&gt;)? | "." &lt;DIGITS&gt;&gt;
+| &lt;FLOAT_LITERAL: &lt;DIGITS&gt; ("f" | "F") | &lt;DIGITS&gt; ("." &lt;DIGITS&gt; ("f" | "F"))? | "." &lt;DIGITS&gt; ("f" | "F")&gt;
+| &lt;DIGITS: (&lt;DIGIT&gt;)+&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;#LETTER: ["A"-"Z","a"-"z"]&gt;
+| &lt;SPECIALCHARS: ["$","_","-"]&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;STRING_LITERAL: "\"" (&lt;EscapeQuot&gt; | &lt;EscapeBslash&gt; | &lt;EscapeSlash&gt; | &lt;EscapeBspace&gt; | &lt;EscapeFormf&gt; | &lt;EscapeNl&gt; | &lt;EscapeCr&gt; | &lt;EscapeTab&gt; | ~["\"","\\"])* "\"" | "\'" (&lt;EscapeApos&gt; | &lt;EscapeBslash&gt; | &lt;EscapeSlash&gt; | &lt;EscapeBspace&gt; | &lt;EscapeFormf&gt; | &lt;EscapeNl&gt; | &lt;EscapeCr&gt; | &lt;EscapeTab&gt; | ~["\'","\\"])* "\'"&gt;
+| &lt;#EscapeQuot: "\\\""&gt;
+| &lt;#EscapeApos: "\\\'"&gt;
+| &lt;#EscapeBslash: "\\\\"&gt;
+| &lt;#EscapeSlash: "\\/"&gt;
+| &lt;#EscapeBspace: "\\b"&gt;
+| &lt;#EscapeFormf: "\\f"&gt;
+| &lt;#EscapeNl: "\\n"&gt;
+| &lt;#EscapeCr: "\\r"&gt;
+| &lt;#EscapeTab: "\\t"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;IDENTIFIER: &lt;LETTER&gt; (&lt;LETTER&gt; | &lt;DIGIT&gt; | &lt;SPECIALCHARS&gt;)*&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; TOKEN : {
+&lt;VARIABLE: "$" &lt;LETTER&gt; (&lt;LETTER&gt; | &lt;DIGIT&gt; | "_")*&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; SKIP : {
+" "
+| "\t"
+| "\r"
+| "\n"
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; SKIP : {
+&lt;"//" (~["\n"])* "\n"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; SKIP : {
+&lt;"//" (~["\n","\r"])* ("\n" | "\r" | "\r\n")?&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT,IN_DBL_BRACE&gt; SKIP : {
+"/*" : INSIDE_COMMENT
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;INSIDE_COMMENT&gt; SPECIAL : {
+&lt;"+" (" ")* (~["*"])*&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;INSIDE_COMMENT&gt; SKIP : {
+"/*" : {
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;INSIDE_COMMENT&gt; SKIP : {
+"*/" : {
+| &lt;~[]&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+</TABLE>
+<H2 ALIGN=CENTER>NON-TERMINALS</H2>
+<TABLE>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/**
+ * SQL++ Statement Rules
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod1">Statements</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod2">SingleStatement</A> &lt;SEMICOLON&gt; )* &lt;EOF&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod2">SingleStatement</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod3">DataverseDeclaration</A> | <A HREF="#prod4">Query</A> )</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/**
+ * Imported from AQL
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod3">DataverseDeclaration</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;USE&gt; &lt;DATAVERSE&gt; <A HREF="#prod5">AQLIdentifier</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod5">AQLIdentifier</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;IDENTIFIER&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod6">AQLStringLiteral</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod6">AQLStringLiteral</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;STRING_LITERAL&gt;</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/*
+ * =============================================================================================================================
+ * Queries
+ * =============================================================================================================================
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod4">Query</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod7">SfwQuery</A> | <A HREF="#prod8">ExprQuery</A> )</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/*
+ * =============================================================================================================================
+ * SFW Queries
+ * =============================================================================================================================
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod7">SfwQuery</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod9">SfwQuerySelectFirst</A> | <A HREF="#prod10">SfwQuerySelectLast</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod9">SfwQuerySelectFirst</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod11">SelectClause</A> <A HREF="#prod12">FromClause</A> ( <A HREF="#prod13">WhereClause</A> )? ( <A HREF="#prod14">GroupByClause</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod10">SfwQuerySelectLast</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod12">FromClause</A> ( <A HREF="#prod13">WhereClause</A> )? ( <A HREF="#prod14">GroupByClause</A> )? <A HREF="#prod11">SelectClause</A></TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/*
+ * =============================================================================================================================
+ * FROM Clause
+ * =============================================================================================================================
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod12">FromClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FROM&gt; <A HREF="#prod15">FromItem</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod15">FromItem</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( <A HREF="#prod16">FromSingle</A> ( <A HREF="#prod17">FromCorrelate</A> )? ) | <A HREF="#prod18">FromFlattenItem</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod16">FromSingle</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod8">ExprQuery</A> &lt;AS&gt; <A HREF="#prod19">FromVariables</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod19">FromVariables</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod20">FromCollectionItem</A> | <A HREF="#prod21">FromTupleItem</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod20">FromCollectionItem</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod22">Variable</A> ( &lt;AT&gt; <A HREF="#prod22">Variable</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod21">FromTupleItem</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;LEFTBRACE&gt; <A HREF="#prod22">Variable</A> &lt;COLON&gt; <A HREF="#prod22">Variable</A> &lt;RIGHTBRACE&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod17">FromCorrelate</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod23">FromInnerCorrelateItem</A> | <A HREF="#prod24">FromLeftCorrelateItem</A> | <A HREF="#prod25">FromFullCorrelateItem</A> | <A HREF="#prod26">FromInnerJoin</A> | <A HREF="#prod27">FromLeftOuterJoin</A> | <A HREF="#prod28">FromFullOuterJoin</A> | <A HREF="#prod29">FromCartesianProduct</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod23">FromInnerCorrelateItem</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;INNER&gt; &lt;CORRELATE&gt; <A HREF="#prod15">FromItem</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod29">FromCartesianProduct</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;COMMA&gt; <A HREF="#prod15">FromItem</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod24">FromLeftCorrelateItem</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;LEFT&gt; ( &lt;OUTER&gt; )? &lt;CORRELATE&gt; <A HREF="#prod15">FromItem</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod25">FromFullCorrelateItem</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FULL&gt; ( &lt;OUTER&gt; )? &lt;CORRELATE&gt; <A HREF="#prod15">FromItem</A> &lt;ON&gt; <A HREF="#prod8">ExprQuery</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod26">FromInnerJoin</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;INNER&gt; )? &lt;JOIN&gt; <A HREF="#prod15">FromItem</A> ( &lt;ON&gt; <A HREF="#prod8">ExprQuery</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod27">FromLeftOuterJoin</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;LEFT&gt; ( &lt;OUTER&gt; )? &lt;JOIN&gt; <A HREF="#prod15">FromItem</A> ( &lt;ON&gt; <A HREF="#prod8">ExprQuery</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod28">FromFullOuterJoin</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;FULL&gt; ( &lt;OUTER&gt; )? &lt;JOIN&gt; <A HREF="#prod15">FromItem</A> &lt;ON&gt; <A HREF="#prod8">ExprQuery</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod18">FromFlattenItem</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod30">FromInnerFlatten</A> | <A HREF="#prod31">FromOuterFlatten</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod30">FromInnerFlatten</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;INNER&gt; &lt;FLATTEN&gt; &lt;LEFTPAREN&gt; <A HREF="#prod8">ExprQuery</A> &lt;AS&gt; <A HREF="#prod22">Variable</A> &lt;COMMA&gt; <A HREF="#prod8">ExprQuery</A> &lt;AS&gt; <A HREF="#prod22">Variable</A> &lt;RIGHTPAREN&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod31">FromOuterFlatten</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;OUTER&gt; &lt;FLATTEN&gt; &lt;LEFTPAREN&gt; <A HREF="#prod8">ExprQuery</A> &lt;AS&gt; <A HREF="#prod22">Variable</A> &lt;COMMA&gt; <A HREF="#prod8">ExprQuery</A> &lt;AS&gt; <A HREF="#prod22">Variable</A> &lt;RIGHTPAREN&gt;</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/*
+ * =============================================================================================================================
+ * WHERE Clause
+ * =============================================================================================================================
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod13">WhereClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;WHERE&gt; <A HREF="#prod8">ExprQuery</A></TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/*
+ * =============================================================================================================================
+ * GROUP BY Clause
+ * =============================================================================================================================
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod14">GroupByClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;GROUP_BY&gt; <A HREF="#prod32">GroupByItem</A> ( <A HREF="#prod32">GroupByItem</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod32">GroupByItem</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod8">ExprQuery</A> &lt;AS&gt; <A HREF="#prod22">Variable</A></TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/*
+ * =============================================================================================================================
+ * SELECT Clause
+ * =============================================================================================================================
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod11">SelectClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;SELECT&gt; ( <A HREF="#prod33">SelectElementClause</A> | <A HREF="#prod34">SelectAttributeClause</A> | <A HREF="#prod35">SelectTupleClause</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod33">SelectElementClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ELEMENT&gt; <A HREF="#prod8">ExprQuery</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod34">SelectAttributeClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ATTRIBUTE&gt; <A HREF="#prod8">ExprQuery</A> &lt;COLON&gt; <A HREF="#prod8">ExprQuery</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod35">SelectTupleClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( <A HREF="#prod8">ExprQuery</A> ( &lt;AS&gt; <A HREF="#prod36">StringValue</A> )? ) ( ( &lt;COMMA&gt; <A HREF="#prod8">ExprQuery</A> ( &lt;AS&gt; <A HREF="#prod36">StringValue</A> )? ) )* )</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/*
+ * =============================================================================================================================
+ * Expr Queries
+ * =============================================================================================================================
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod8">ExprQuery</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod37">OperationQuery</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod38">NestedQuery</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;LEFTPAREN&gt; <A HREF="#prod7">SfwQuery</A> &lt;RIGHTPAREN&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod37">OperationQuery</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod39">RelationshipQuery</A> ( &lt;EQ&gt; <A HREF="#prod39">RelationshipQuery</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod39">RelationshipQuery</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod40">ValueQuery</A> ) ( <A HREF="#prod41">NavStep</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod41">NavStep</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod42">TupleNav</A> | <A HREF="#prod43">ArrayNav</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod42">TupleNav</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DOT&gt; ( <A HREF="#prod44">Identifier</A> | <A HREF="#prod36">StringValue</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod43">ArrayNav</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;LEFTBRACKET&gt; <A HREF="#prod8">ExprQuery</A> &lt;RIGHTBRACKET&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod40">ValueQuery</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod22">Variable</A> | <A HREF="#prod45">Value</A> | <A HREF="#prod46">Dataset</A> | <A HREF="#prod38">NestedQuery</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod44">Identifier</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;IDENTIFIER&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod22">Variable</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;VARIABLE&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod46">Dataset</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;IDENTIFIER&gt;</TD>
+</TR>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/*
+ * =============================================================================================================================
+ * Values
+ * =============================================================================================================================
+ */</PRE>
+  </TD>
+ </TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod45">Value</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod47">MissingValue</A> | <A HREF="#prod48">NullValue</A> | <A HREF="#prod49">ComplexValue</A> | <A HREF="#prod50">ScalarValue</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod47">MissingValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;MISSING&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod48">NullValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;NULL&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod49">ComplexValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod51">TupleValue</A> | <A HREF="#prod52">CollectionValue</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod51">TupleValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;LEFTBRACE&gt; &lt;RIGHTBRACE&gt; ) | ( &lt;LEFTBRACE&gt; ( <A HREF="#prod44">Identifier</A> | <A HREF="#prod36">StringValue</A> ) &lt;COLON&gt; <A HREF="#prod8">ExprQuery</A> ( &lt;COMMA&gt; ( <A HREF="#prod44">Identifier</A> | <A HREF="#prod36">StringValue</A> ) &lt;COLON&gt; <A HREF="#prod8">ExprQuery</A> )* &lt;RIGHTBRACE&gt; ) )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod52">CollectionValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod53">ArrayValue</A> | <A HREF="#prod54">BagValue</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod53">ArrayValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;LEFTBRACKET&gt; &lt;RIGHTBRACKET&gt; ) | ( &lt;LEFTBRACKET&gt; <A HREF="#prod8">ExprQuery</A> ( &lt;COMMA&gt; <A HREF="#prod8">ExprQuery</A> )* &lt;RIGHTBRACKET&gt; ) )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod54">BagValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( &lt;LEFTDBLBRACE&gt; &lt;RIGHTDBLBRACE&gt; ) | ( &lt;LEFTDBLBRACE&gt; <A HREF="#prod8">ExprQuery</A> ( &lt;COMMA&gt; <A HREF="#prod8">ExprQuery</A> )* &lt;RIGHTDBLBRACE&gt; ) )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod50">ScalarValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod55">PrimitiveValue</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod55">PrimitiveValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod56">NumberValue</A> | <A HREF="#prod36">StringValue</A> | <A HREF="#prod57">BooleanValue</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod56">NumberValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;INTEGER_LITERAL&gt; | &lt;FLOAT_LITERAL&gt; | &lt;DOUBLE_LITERAL&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod36">StringValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;STRING_LITERAL&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod57">BooleanValue</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;TRUE&gt; | &lt;FALSE&gt; )</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>
