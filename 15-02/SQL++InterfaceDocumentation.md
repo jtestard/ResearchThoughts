@@ -582,7 +582,7 @@ SelectClause FromClause WhereClause                 select ( Condition)
                                              subplan
              NestedQuery            ===>        aggregate [$$K+2] <- [function-call: asterix:listify, Args[%0 <- $$K+1]]
                   |                                 assign $$K+1 <- ( expression from SelectClause )
-              SfwQuery                                select ( Condition 
+              SfwQuery                                select ( Condition )
          /         |        \                           unnest $$K <- ( expression from FromItem )
 SelectClause FromClause WhereClause                      ...
                    |        |                             unnest $$0 <- ( expression from FromItem )
