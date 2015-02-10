@@ -425,14 +425,16 @@ Work in progress. Will be transformed into an attribute grammar where :
          FromCollectionItem             ===>    unnest $$0 <- function-call: asterix:dataset, Args:[
        /          |         \                                                       AString: {DatasetName}
  FunctionCall ElementVar PositionVar                                                 ]
- {'Dataset'}     id=0       id=1
+ {'Dataset'}     id=0       null
      |
 [Arg0='DatasetName']
 ```
 
+Note that Datasets are bags (position variabls cannot be used).
+
 ###### Variable Input
 ```
-         FromCollectionItem             ===>    unnest $$0 <- function-call: asterix:scan-collection, Args:[%0->$$2]
+         FromCollectionItem             ===>    unnest $$0 at $$1 <- function-call: asterix:scan-collection, Args:[%0->$$2]
        /          |         \                                                       
  Variable   ElementVar PositionVar                                                 
    id=2       id=0       id=1
@@ -440,7 +442,7 @@ Work in progress. Will be transformed into an attribute grammar where :
 
 ###### Tuple/Array Navigation Input
 ```
-         FromCollectionItem             ===>    unnest $$0 <- function-call: asterix:scan-collection, Args:[
+         FromCollectionItem             ===>    unnest $$0 at $$ 1 <- function-call: asterix:scan-collection, Args:[
        /          |         \                                   function-call: asterix:field-access-by-name, Args:[
  FunctionCall ElementVar PositionVar                                         %0 -> $$2,
  {'TupleNav'}    id=0       id=1                                            AString: {AttributeName}
@@ -453,7 +455,7 @@ if the result of `ExprQuery` is in variable with id `2`.
 
 ###### Nested Query Input
 ```
-         FromCollectionItem             ===>    unnest $$0 <- function-call: asterix:scan-collection, Args:[%0->$$2]
+         FromCollectionItem             ===>    unnest $$0 at $$ 1 <- function-call: asterix:scan-collection, Args:[%0->$$2]
        /          |         \                                                       
  NestedQuery  ElementVar PositionVar                                                 
    id=2         id=0       id=1
