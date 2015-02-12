@@ -142,7 +142,7 @@ In the attribute grammar, it has four attributes :
 The `UnnestOperator` is visualized as :
 
 ```
-unnest $$0 at $$1 <- expression
+unnest $$0 at $$1 <- unnestExpression
 ```
 
 where `variable.id = 0` and `positionalVariable.id = 1`.
