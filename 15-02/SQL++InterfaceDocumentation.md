@@ -106,13 +106,9 @@ The `Order By` and `Group By` clause being not fully supported for the moment, r
 This rewriting is independent from the Core Reduction rewriting and occurs before the Core Reduction. If the top-level expression is not a `SfwQuery` it is transformed into one as follows :
 
 ```
-ExprQuery       ===>         SfwQuery
-                           /          \
-                 SelectElementClause  FromClause
-                        |                  |
-                   Variable             FromCollectionItem
-                                        /           \
-                                  ExprQuery        Variable                                
+ExprQuery       ===>         SelectElementClause
+                                    |
+                                ExprQuery
 ```
 
 ## AST to Plan Translation Productions
