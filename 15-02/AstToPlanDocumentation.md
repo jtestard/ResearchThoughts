@@ -554,7 +554,7 @@ SFW [
     ]
   
   Select Element
-    RecordConstructor [
+    TupleValue [
       (
       name
         :
