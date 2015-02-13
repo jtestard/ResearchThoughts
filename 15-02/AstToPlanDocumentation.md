@@ -33,6 +33,9 @@ This attribute is present in all materialized operators. It specifies the order 
 ##### Production Description
 Each production is accompanied by a description of the role of the left hand side non-terminal in Asterix and what its attributes represent.
 
+##### Start Symbol
+The start symbol for this attribute grammar is the `DistributeResultOperator`.
+
 ##### Visualization
 Finally, the visualization of what the left hand side non-terminal would look like on the Asterix Web Interface is provided.    
 
@@ -44,6 +47,7 @@ Finally, the visualization of what the left hand side non-terminal would look li
 DistributeResultOperator{dro}           ::= ProjectOperator{po}
                                Attributes : dro.input <- po
                                             dro.variable <- po.variable
+                                            po.isTop <- true
 ```
 The `DistributeResultOperator` is the top-most operator in every plan. In the attribute grammar, it possesses two attributes : the `input` (see operator input above) and the `variable`. The `DistributeResultOperator` is visualized as :
 
@@ -56,31 +60,47 @@ where `variable.id = 0`. This operator does not play a role until further in the
 #### ProjectOperator
 
 ```
-ProjectOperator{p}                     ::= _SelectClause{sc} _FromClause{fc}
+ProjectOperator{p}                     ::=  'SfwQuery'{sfwq}
+                                          /         |       \
+                       _SelectClause{sc}    _FromClause{fc} (_WhereClause{wc})?
+                               condition  : sfwq.isTop = true
                                Attributes : p.variable <- sc.variable
                                             fc.input <- empty-tuple-source
-                                            sc.input <- fc
+                                            if wc exists then
+                                                wc.input <- fc
+                                                sc.input <- wc
+                                            else
+                                                sc.input <- fc
                                             p.input <- sc
 ```
+
 The `ProjectOperator` specifies which Logical Variable should be output to the eventual end-user.
 In the attribute grammar, it possesses two attributes :
 
  - The `input` (see operator input above).
- - The `variable` which specifies what the end-user will see as output. 
+ - The `variable` which specifies what the end-user will see as output.
+
+The `ProjectOperator` is visualized as :
+
+```
+project [$$0]
+``` 
+
+where `variable.id = 0`.
 
 #### AssignOperator
 
 ```
 _SelectClause{sc}                      ::=  AssignOperator{a}
-                                    Attributes : sc <- a
+                                    Attributes : sc <- a.input
 AssignOperator{a}                       ::= _SelectElementExpression{see}
                                Attributes : a.expression <- see
                                             a.variable <- context.newVar()
-                                            see.input <- a
+                                            see.input <- a.input
                                         |   _SelectTupleExpression{ste}
                                Attributes : a.expression <- ste
                                             a.variable <- context.newVar()
-                                            ste.input <- a
+                                            ste.input <- a.input
 ```
 
 In Asterix, the `AssignOperator` is used to assign an Asterix Expression to a new Logical Variable.
@@ -108,6 +128,15 @@ _SelectElementExpression{see}          ::=  'SelectElementClause'
 ```
 Intermediate result.
 
+#### SelectTupleExpression
+
+```
+_SelectTupleExpression{ste}        ::=  'SelectTupleClause'
+                                                |
+                                 ScalarFunctionCallExpression{sfce}
+                                Attributes : ste <- sfce
+```
+
 #### SQLPPExpression
 
 ```
@@ -115,21 +144,106 @@ _SQLPPExpression{sqlppe}                ::= ScalarFunctionCallExpression{sfce}
                                     Attributes: sqlppe <- sfce
                                         |   VariableReferenceExpression{vre} 
                                     Attributes: sqlppe <- vre
+                                        |   _NestedQueryExpression{nqe}
+                                    Attributes: sqlppe <- nqe
 ```
 Intermediate result.
+
+#### SubplanOperator
+
+```
+_NestedQueryExpression{nqe}             ::= SubplanOperator{spo}
+                                    Attributes : spo <- nqe
+SubPlanOperator{spo}                    ::= 'NestedQuery'{nq}
+                                                |
+                                         AggregateOperator{agg}
+                                    Attributes : spo.rootOp <- agg
+                                                
+```
+In the attribute grammar, the `SubPlanOperator` has two attributes :
+
+ - The `input` (see input operator description above).
+ - The `rootOp` is the root operator of the subplan operator.   
+
+The `SubPlanOperator` is visualized as :
+
+```
+subplan {
+    ...
+}
+```
+
+#### AggregateOperator
+
+```
+AggregateOperator{agg}                  ::=    'SfwQuery'{sfwq}
+                                          /         |       \
+                       _SelectClause{sc}    _FromClause{fc} (_WhereClause{wc})?
+                               condition  : sfwq.isTop = false
+                               Attributes : agg.variable <- context.newVar()
+                                            agg.listVariable <- sc.variable
+                                            fc.input <- nested-tuple-source
+                                            wc.input <- fc
+                                            sc.input <- wc
+                                            agg.input <- sc
+```
+In Asterix, the `AggregateOperator` is used as the top level elements of subplans.
+In our context, the `AggregateOperator` is used in conjunction with the `listify` asterix function which accumulates results from a subplan and passes the resulting list to the parent operator.  
+In the attribute grammar, the `AggregateOperator` has three attributes :
+
+ - The `input` (see input operator description above).
+ - The `listVariable` (the variable which is used to accumulate tuples from the subplan).
+ - The `variable` (the variable which is assigned the output of the aggregation). 
+ 
+The `AggregateOperator` is visualized as :
+
+```
+aggregate [$$1] <- [function-call: asterix: listify, Args: [%0-$$1]]
+```
+where `listVariable.id=0` and `variable.id = 1`.
+
+#### FromClause
+
+```
+_FromClause{fc}                     ::=   'FromClause'
+                                                |
+                                            _FromItem{fi}
+                                Attributes : fc <- fi
+                                
+_FromItem{fi}                       ::=  _FromCollectionItem{fci}
+                                Attributes : fi <- fci
+                                    |    _FromInnerCorrelateItem{fici}
+                                Attributes : fi <- fici
+                                    |    _FromInnerJoinItem{fiji}
+                                Attributes : fi <- fiji
+                                 
+_FromCollectionItem{fci}            ::= UnnestOperator{unnest}
+                                Attributes : fci <- unnest
+                                
+_FromInnerCorrelateItem{fici}       ::= 'FromInnerCorrelate'
+                                        /               \
+                         _FromCollectionItem{fci1}  _FromCollectionItem{fci2}
+                                Attributes : fic1.input <- fci2
+                                             fic2.input <- fici.input
+
+_FromInnerJoinItem{fiji}            ::=     'FromInnerJoinItem'
+                                        /               |         \
+              _FromCollectionItem{fci1}  _FromCollectionItem{fci2} SelectOperator{so}
+                                Attributes : so.input <- fic1
+                                             fci1.input <- fic2
+                                             fci2.input <- fiji.input
+```
 
 #### UnnestOperator
 
 ```
-_FromClause{fc}                      ::=  UnnestOperator{unnest}
-                                Attributes : fc <- unnest
 UnnestOperator{op}                     ::=  'FromCollectionItem'
                                             /        |          \
         UnnestingFunctionCallExpression{unnest}  'Variable'{e}  'Variable'{p}
                                 Attributes : op.unnestExpression <- unnest
                                     op.variable <- context.newVar(e)
                                     op.positionalVariable <- context.newVar(p)
-                                    unnest.input <- op
+                                    unnest.input <- op.input
 ```
 
 In Asterix, the `UnnestOperator` is used to unnest collections or datasets.
@@ -154,11 +268,11 @@ where `variable.id = 0` and `positionalVariable.id = 1`.
 UnnestingFunctionCallExpression{unnest} ::= _SQLPPExpression{sqlppe}
                                    Attributes : unnest.functionId <- scan-collection
                                                 unnest.expression <- sqlppe
-                                                sqlppe.input <- unnest
+                                                sqlppe.input <- unnest.input
                                         |   _DatasetFunctionCallExpression{dsfce}  
                                    Attributes : unnest.functionId <- scan-dataset
                                                 unnest.expression <- dsfce
-                                                sqlppe.input <- unnest
+                                                sqlppe.input <- unnest.input
 ```
 
 In Asterix, the `UnnestingFunctionCallExpression` is an expression which specifies the behavior of an `UnnestOperator`.
@@ -174,6 +288,24 @@ function-call: asterix:scan-collection, Args:[expression]   if functionId = scan
 function-call: asterix:scan-dataset, Args[expression]       if functionId = scan-dataset
 ```
 
+#### SelectOperator
+
+```
+_WhereClause{wc}            ::=  'WhereClause'
+                                       |
+                               SelectOperator{so}
+                        Attributes : wc <- so
+SelectOperator{so}          ::=  _SQLPPExpression{sqlppe}
+                             sqlppe.input <- so 
+```
+The `SelectOperator` in Asterix filters its input binding tuples according to a condition expression.
+In the attribute grammar, it has only one attribute, the `input` (see operator input above).
+The `SelectOperator` is visualized as :
+
+```
+select [expression]
+```
+
 #### DatasetFunctionCallExpression
 
 ```
@@ -184,7 +316,7 @@ _DatasetFunctionCallExpression{dsfce}    ::=  'FunctionCall'
                                                         ConstantExpression{dsName}
                                    condition : type = "dataset"
                                    Attributes : dsfce <- dsName
-                                                dsName.input <- dsfce
+                                                dsName.input <- dsfce.input
 ```
 Intermediate result. This production only applies if the condition `type = "dataset"` is met. 
 
@@ -232,6 +364,8 @@ ScalarFunctionCallExpression{sfce}          ::= _NavigationExpression{ne}
                                         Attributes : sfce <- boe
                                             |   _ComplexValueConstructExpr{cvce}
                                         Attributes : sfce <- cvce
+                                            |   _SelectTupleItems{sti}
+                                        Attributes : sfce <- sti
 ```
 
 The roles of the `ScalarFunctionCallExpression`s in Asterix range from navigation to arithmetic operations to complex value construction.
@@ -261,7 +395,7 @@ _NavigationExpression{ne}               ::= 'FunctionCall'
                                     Attributes: ne.functionId <- field-acces-by-name
                                                 ne.arguments[0] <- sqlppe
                                                 ne.arguments[1] <- nav
-                                                sqlppe.input <- ne
+                                                sqlppe.input <- ne.input
                                         |   'FunctionCall'
                                             /           \
                                   'StringValue'{type}   'List<Query>'{args}
@@ -271,7 +405,7 @@ _NavigationExpression{ne}               ::= 'FunctionCall'
                                     Attributes: ne.functionId <- get-item
                                                 ne.arguments[0] <- sqlppe
                                                 ne.arguments[1] <- nav
-                                                sqlppe.input <- ne
+                                                sqlppe.input <- ne.input
 ```
 
 #### BinaryOperationExpression
@@ -285,8 +419,8 @@ _BinaryOperationExpression{boe}       ::=  'FunctionCall'
                                     Attributes: boe.functionId <- and
                                                 boe.arguments[0] <- sqlpp1
                                                 boe.arguments[1] <- sqlpp2
-                                                sqlpp1.input <- boe
-                                                sqlpp2.input <- boe
+                                                sqlpp1.input <- boe.input
+                                                sqlpp2.input <- boe.input
                                         |  'FunctionCall'
                                             /           \
                                   'StringValue'{type}   'List<Query>'{args}
@@ -296,8 +430,8 @@ _BinaryOperationExpression{boe}       ::=  'FunctionCall'
                                     Attributes: boe.functionId <- eq
                                                 boe.arguments[0] <- sqlpp1
                                                 boe.arguments[1] <- sqlpp2
-                                                sqlpp1.input <- boe
-                                                sqlpp2.input <- boe
+                                                sqlpp1.input <- boe.input
+                                                sqlpp2.input <- boe.input
 ```
 
 #### ComplexValueConstructionExpression
@@ -316,9 +450,9 @@ _ComplexValueConstructExpr{cvce} ::=    'TupleValue'
           ...
           cvce.arguments[2n-2] <- aliasN
           cvce.arguments[2n-1] <- sqlppN
-          sqlpp1.input <- cvce
+          sqlpp1.input <- cvce.input
           ...
-          sqlppN.input <- cvce
+          sqlppN.input <- cvce.input
                                     |   'BagValue'
                                             |
                                    'HashSet<ExprQuery>'
@@ -328,9 +462,9 @@ _ComplexValueConstructExpr{cvce} ::=    'TupleValue'
           cvce.arguments[0] <- sqlpp1
           ...
           cvce.arguments[n-1] <- sqlppN
-          sqlpp1.input <- cvce
+          sqlpp1.input <- cvce.input
           ...
-          sqlppN.input <- cvce
+          sqlppN.input <- cvce.input
                                     |   'ArrayValue'
                                             |
                                    'ArrayList<ExprQuery>'
@@ -340,7 +474,29 @@ _ComplexValueConstructExpr{cvce} ::=    'TupleValue'
           cvce.arguments[0] <- sqlpp1
           ...
           cvce.arguments[n-1] <- sqlppN
-          sqlpp1.input <- cvce
+          sqlpp1.input <- cvce.input
           ...
-          sqlppN.input <- cvce
+          sqlppN.input <- cvce.input
+```
+
+
+#### SelectTupleItems
+
+```
+_SelectTupleItems{sti}            ::=  _SelectTupleItems
+                                              |
+                                          'ItemList'
+                                   /          |         \
+                      SelectItem             ...           SelectItem
+                    /            \                      /               \
+'StringValue'{alias1}   _SQLPPExpression{sqlpp1} 'StringValue'{aliasN}   _SQLPPExpression{sqlppN}
+      Attributes: sti.functionId <- open-record-constructor
+          sti.arguments[0] <- alias1
+          sti.arguments[1] <- sqlpp1
+          ...
+          sti.arguments[2n-2] <- aliasN
+          sti.arguments[2n-1] <- sqlppN
+          sqlpp1.input <- cvce.input
+          ...
+          sqlppN.input <- cvce.input
 ```
