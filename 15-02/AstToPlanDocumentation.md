@@ -500,3 +500,96 @@ _SelectTupleItems{sti}            ::=  _SelectTupleItems
           ...
           sqlppN.input <- cvce.input
 ```
+
+### Examples 
+
+SQL++ AST :
+```
+SFW [
+  From
+      FunctionCall dataset[
+        "FacebookUsers"
+      ]
+       as 
+      fb[0][newVar]
+      
+     inner correlate 
+       (
+        SFW [
+          From
+            FunctionCall dataset[
+              "FacebookMessages"
+            ]
+             as 
+            fbm[1][newVar]
+            
+          Where
+            FunctionCall eq[
+              FunctionCall tuple_nav[
+                fb[0][reference]
+                "id"
+              ]
+              FunctionCall tuple_nav[
+                fbm[1][reference]
+                "author-id"
+              ]
+            ]
+          
+          Select Element
+            fbm[1][reference]
+          
+        ]
+      )
+       as 
+      fbm[2][newVar]
+      
+    
+  Where
+    FunctionCall eq[
+      FunctionCall tuple_nav[
+        fb[0][reference]
+        "id"
+      ]
+      1
+    ]
+  
+  Select Element
+    RecordConstructor [
+      (
+      name
+        :
+      FunctionCall tuple_nav[
+        fb[0][reference]
+        "name"
+      ]
+      )
+      (
+      fbm
+        :
+      FunctionCall tuple_nav[
+        fbm[1][reference]
+        "message"
+      ]
+      )
+    ]
+  
+]
+```
+
+Resulting Plan : 
+
+```
+distribute result [%0->$$11]
+  project ([$$11])
+    assign [$$11] <- [function-call: asterix:open-record-constructor, Args:[AString: {name}, function-call: asterix:field-access-by-name, Args:[%0->$$0, AString: {name}], AString: {fbm}, function-call: asterix:field-access-by-name, Args:[%0->$$1, AString: {message}]]]
+      select (function-call: algebricks:eq, Args:[function-call: asterix:field-access-by-name, Args:[%0->$$0, AString: {id}], AInt32: {1}])
+        unnest $$2 <- function-call: asterix:scan-collection, Args:[%0->$$8]
+          subplan {
+                    aggregate [$$8] <- [function-call: asterix:listify, Args:[%0->$$1]]
+                      select (function-call: algebricks:eq, Args:[function-call: asterix:field-access-by-name, Args:[%0->$$0, AString: {id}], function-call: asterix:field-access-by-name, Args:[%0->$$1, AString: {author-id}]])
+                        unnest $$1 <- function-call: asterix:dataset, Args:[AString: {FacebookMessages}]
+                          nested tuple source
+                 }
+            unnest $$0 <- function-call: asterix:dataset, Args:[AString: {FacebookUsers}]
+              empty-tuple-source
+```
