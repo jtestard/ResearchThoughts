@@ -1,0 +1,12 @@
+With redis you need to write your own indexes ?
+
+==> Redis supports key lookup and range query operations. 
+
+
+Elastic search and mongoldb : multi database paradigm.
+
+
+
+
+
+      StartTime := clock_timestamp ()<< Put your queries here >>      EndTime := clock_timestamp ();      Delta :=         round (              1000            * (extract (EPOCH FROM EndTime) - extract (EPOCH FROM StartTime))            / num_iterations);      RAISE NOTICE 'Duration in millisecs=%' , Delta;

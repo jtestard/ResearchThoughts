@@ -1,4 +1,4 @@
-# SQL++ Interface Documentation
+# SQL++ Core Rewriting
 
 You can refer to the BNF for SQL++ Queries [here](SQL++BNF.md)
 

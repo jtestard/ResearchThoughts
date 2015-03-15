@@ -199,8 +199,7 @@ SingleStatement ::= ( DataverseDeclaration | Query )
  * Imported from AQL
  */
 DataverseDeclaration    ::= <USE> <DATAVERSE> AQLIdentifier
-AQLIdentifier   ::= <IDENTIFIER>
-|   AQLStringLiteral
+AQLIdentifier   ::= <IDENTIFIER>   |   AQLStringLiteral
 AQLStringLiteral    ::= <STRING_LITERAL>
 /*
  * =============================================================================================================================

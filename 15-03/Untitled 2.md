@@ -1,0 +1,2 @@
+- `edu.uci.ics.asterix.optimizer.rules`
+- `edu.uci.ics.hyracks.algebricks.rewriter.rules`

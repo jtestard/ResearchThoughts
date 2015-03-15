@@ -1,7 +1,7 @@
-## AST to Plan Translation Attribute Grammar
+## Attribute Grammar for SQL++ Abstract Syntax Tree (AST) to Asterix Logical Plan Translation
 
 This document shows the attribute grammar specification of the translation process from SQL++ ASTs to Asterix Logical Plans.
-The terminology used should be familiar to anyone having studied attribute grammars. If you haven't, here is a [link](http://homepage.cs.uiowa.edu/~slonnegr/plf/Book/Chapter3.pdf)
+The terminology used should be familiar to anyone having studied attribute grammars but if you haven't, here is a [link](http://homepage.cs.uiowa.edu/~slonnegr/plf/Book/Chapter3.pdf)
 to a very good tutorial. Intuitively, this grammar describes a parser which "parses" syntax trees and "produces" logical plans. The naming conventions are described here :
 
 ##### Non-Terminals

@@ -1,0 +1,92 @@
+drop dataverse RestaurantReviewDemo if exists;
+create dataverse RestaurantReviewDemo;
+use dataverse RestaurantReviewDemo;
+create type UserType as closed {
+  user_info : {
+    name : string,
+    age : int32,
+    location : string,
+    interests : {
+      venue_type : {{ venue : string }}, //Bar, Restaurant...
+      food_style : {{ category : string }} // Sushi, Tacos...
+    }
+  },
+  user_key : int32
+};
+create type ReviewType as closed {
+  user_key : int32,
+  review_key : int32,
+  rating : int32,
+  comments : string,
+  venue_name : string,
+  venue_type : string,
+  food_style : string,
+  //pictures : {{binary}}* //optional
+};
+
+create internal dataset Users(UserType) primary key cust_key;
+create internal dataset Reviews(ReviewType) primary key order_key;
+insert into dataset Customers([
+  {
+    "user_info" : {
+      name : "John Smith",
+      age : 32,
+      location : "La Jolla, CA",
+      interests : {
+        venue_type : {{"bar", "restaurant"}},
+        food_style : {{"sushi", "tacos"}}
+      }
+    },
+    "user_key" : 0
+  },
+  {
+    "user_info" : {
+      name : "Angela Lopez",
+      age : 21,
+      location : "Pacific Beach, CA",
+      interests : {
+        venue_type : {{"bar", "nightclub"}}
+      }
+    },
+    "user_key" : 1
+  },
+]);
+insert into dataset Orders([
+  {
+    "user_key" : 0,
+    "review_key" : 0,
+    "rating" : 2,
+    "comments" : "...",
+    "venue_name" : "Edo Sushi",
+    "venu_type" : "restaurant",
+    "food_style" : "sushi"
+  },
+  {
+    "user_key" : 1,
+    "review_key" : 1,
+    "rating" : 5,
+    "comments" : "...",
+    "venue_name" : "Kyoto Sushi",
+    "venu_type" : "restaurant",
+    "food_style" : "sushi"
+  },
+  {
+    "user_key" : 0,
+    "review_key" : 2,
+    "rating" : 3,
+    "comments" : "...",
+    "venue_name" : "La rosa de oro",
+    "venu_type" : "restaurant",
+    "food_style" : "Tacos"
+  },
+  {
+    "user_key" : 1,
+    "review_key" : 3,
+    "rating" : 5,
+    "comments" : "...",
+    "venue_name" : "Tutti quanti",
+    "venu_type" : "restaurant",
+    "food_style" : "italian"
+  }
+]);
+
