@@ -107,9 +107,16 @@ The index is where you put your data. Looks gross.
 New "Schema"
 
 ![cassandra](./imgs/cassandra_column_family.png)
+![cassandra](./imgs/cassandra_super_slice.png)
 
 
 ## On MongoDB
 
-```
-```
+Pretty straightforward.
+
+![mongo](./imgs/mongo_query.png)
+
+## Summary
+
+![nosql](./imgs/nosql_fit.png)
+![summary](./imgs/summary_chris_richardson.png)

@@ -1,0 +1,2 @@
+## Discussion on AsterixDB changes
+

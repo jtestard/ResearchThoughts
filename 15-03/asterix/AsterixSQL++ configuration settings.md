@@ -23,17 +23,39 @@ all the configuration parameters already set up.
 	null_eq_scalar: null,
 	null_eq_complex: null,
 	null_and_true: null,
-	null_and_false: false
-	null_and_null: null
+	null_and_false: false,
+	null_and_null: null,
+	null_eq_missing: error,
+	missing_eq_missing : error,
+	missing_eq_scalar : error,
+	missing_eq_complex: error,
+	null_and_missing: error,
+	missing_and_true: error,
+	missing_and_false: error,
+	missing_and_missing: error
 }
-@from { // not supported in the live demo
-	bag_order : counter
+@from {
+	bag_order : zero,
 	no_match : null
 }
 @groupby{
-	support : yes
+	support : yes,
+	scalar: yes,
+	complex: error,
+	group_var: yes,
 }
 ```
+
+```
+	missing: error
+	null: yes,
+```
+
+Output :
+
+`null` and `missing` are still a problem.
+
+
 
 ```
 @data.array			yes
