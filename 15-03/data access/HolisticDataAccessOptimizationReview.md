@@ -444,3 +444,69 @@ Results :
 { "name": "SuzannaTillson", "messages": [ { "message-id": 15, "author-id": 7, "in-res
                                                     -- EMPTY_TUPLE_SOURCEponse-to": 11, "sender-location": point("44.47,67.11"), "message": " like iphone the voicemail-service is awesome" } ] }
 ```
+
+HolisticDataAccessOptimization
+
+
+Initial logical plan :
+
+```
+  project ([result])
+    assign [result] <- { “nation_key” : n.nation_key, “nation_name” : n.nation_name, “aggregates” : aggVar }
+      subplan {
+                aggregate aggVar <- listify ( projVar )
+                  assign projVar <- { “order_year” : order_year, “sum_price” : sql-sum ( list_of_prices ) }
+                    subplan { aggregate list_of_prices <- listify ( total_price ) ; assign total_price <- g.o.total_price
+   unnest g <- group as g ; nested tuple source }
+                      limit 3
+                        order DESC, sql-sum ( list_of_prices )
+                    	     subplan { aggregate list_of_prices <- listify ( total_price ) ; assign total_price <- g.o.total_price
+   	unnest g <- group as g ; nested tuple source }
+                            group by order_year <- o.order_year { aggregate group <- listify ( groupVar ) ; nested tuple source }
+                              assign groupVar <- { “c” : c, “o” : o }
+                                select o.cust_ref = c.cust_key and c.nation_ref = n.nation_key
+                                  unnest c <- scan-dataset Customers
+                                    unnest o <- scan-dataset Orders
+                                      nested tuple source
+             }
+        unnest n <- scan-dataset Nations
+          empty-tuple-source
+```
+
+Rewriting with normalized sets :
+
+```
+  project ([result])
+    assign [result] <- { “nation_key” : n.nation_key, “nation_name” : n.nation_name, “aggregates” : r.aggregates }
+    left-outer-join l.nation_key = r.nation_key
+    	//Right tree
+    	assign r <- { "nation_key" : nation_key, "aggregates" : group } **cannot get nation_key as of now**
+		group by nation_key <- nation_key {
+			aggregate group <- listify ( newGroupVar )
+			limit 3
+			order DESC, g.list_price
+			unnest g <- newGroupVar; nested tuple source
+		}
+		assign newGroupVar <- { "nation_key" : nation_key, "order_year" : order_year, "list_price" : list_price }
+		assign list_price <- sql-sum ( list_of_prices )
+			subplan {
+				aggregate list_of_prices <- listify ( total_price ) ; assign total_price <- g.o.total_price
+				unnest g <- groupVar; nested tuple source
+			}
+		group by nation_key <- n.nation_key, order_year <- o.order_year {
+			aggregate group <- listify ( groupVar ) ; nested tuple source
+		}
+		assign groupVar <- { "n" : n, “c” : c, “o” : o }
+		select o.cust_ref = c.cust_key and c.nation_ref = n.nation_key
+		unnest c <- scan-dataset Customers
+	    	unnest o <- scan-dataset Orders
+	    		distinct n.nation_key
+		    		unnest n <- scan-dataset Nations
+   		 				empty-tuple-source                              
+		//Left tree
+    	unnest l <- scan-dataset Nations
+    		empty-tuple-source
+```
+
+This does not deal with the issue of null vs missing.
+If a valid `l` tuple has attribute `nation_key` equal to `null`, it will match in asterix an `r` tuples with no `nation_key` attribute.

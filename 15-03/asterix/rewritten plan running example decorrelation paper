@@ -1,0 +1,29 @@
+```
+  project ([result])
+    assign [result] <- { “nation_key” : n.nation_key, “nation_name” : n.nation_name, “aggregates” : r.aggregates }
+    left-outer-join l.nation_key = r.nation_key
+    	//Right tree
+    	assign r <- { "nation_key" : nation_key, "aggregates" : newGroup }
+		group by nation_key <- nation_key {
+			aggregate newGroup <- listify ( newGroupVar )
+			limit 3
+			order DESC, newGroupVar.list_price; nested tuple source }
+		assign newGroupVar <- { "nation_key" : nation_key, "order_year" : order_year, "list_price" : list_price }
+		assign list_price <- sql-sum ( list_of_prices )
+			subplan {
+				aggregate list_of_prices <- listify ( total_price ) ; assign total_price <- g.o.total_price
+				unnest g <- groupVar; nested tuple source }
+		group by nation_key <- n.nation_key, order_year <- o.order_year {
+			aggregate group <- listify ( groupVar ) ; nested tuple source }
+		assign groupVar <- { "n" : n, “c” : c, “o” : o }
+		select o.cust_ref = c.cust_key and c.nation_ref = n.nation_key
+		unnest c <- scan-dataset Customers
+	    	unnest o <- scan-dataset Orders
+	    		distinct n.nation_key
+		    		unnest n <- scan-dataset Nations
+   		 				empty-tuple-source                              
+		//Left tree
+    	unnest l <- scan-dataset Nations
+    		empty-tuple-source
+```
+

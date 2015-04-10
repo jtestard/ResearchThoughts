@@ -1,0 +1,198 @@
+```
+[
+   {
+      "id":6      i32,
+      "alias":"Willis",
+      "name":"WillisWynne",
+      "user-since":      datetime("2005-01-17T10:10:00.000      Z"),
+      "friend-ids":{
+         {
+            1            i32,
+            3            i32,
+            7            i32
+         }
+      },
+      "employment":[
+         {
+            "organization-name":"jaydax",
+            "start-date":date("2009-05-15"),
+            "end-date":null
+         }
+      ]
+   },
+   {
+      "id":1      i32,
+      "alias":"Margarita",
+      "name":"MargaritaStoddard",
+      "user-since":      datetime("2012-08-20T10:10:00.000      Z"),
+      "friend-ids":{
+         {
+            2            i32,
+            3            i32,
+            6            i32,
+            10            i32
+         }
+      },
+      "employment":[
+         {
+            "organization-name":"Codetechno",
+            "start-date":date("2006-08-06"),
+            "end-date":null
+         }
+      ]
+   },
+   {
+      "id":2      i32,
+      "alias":"Isbel",
+      "name":"IsbelDull",
+      "user-since":      datetime("2011-01-22T10:10:00.000      Z"),
+      "friend-ids":{
+         {
+            1            i32,
+            4            i32
+         }
+      },
+      "employment":[
+         {
+            "organization-name":"Hexviafind",
+            "start-date":date("2010-04-27"),
+            "end-date":null
+         }
+      ]
+   },
+   {
+      "id":4      i32,
+      "alias":"Nicholas",
+      "name":"NicholasStroh",
+      "user-since":      datetime("2010-12-27T10:10:00.000      Z"),
+      "friend-ids":{
+         {
+            2            i32
+         }
+      },
+      "employment":[
+         {
+            "organization-name":"Zamcorporation",
+            "start-date":date("2010-06-08"),
+            "end-date":null
+         }
+      ]
+   },
+   {
+      "id":8      i32,
+      "alias":"Nila",
+      "name":"NilaMilliron",
+      "user-since":      datetime("2008-01-01T10:10:00.000      Z"),
+      "friend-ids":{
+         {
+            3            i32
+         }
+      },
+      "employment":[
+         {
+            "organization-name":"Plexlane",
+            "start-date":date("2010-02-28"),
+            "end-date":null
+         }
+      ]
+   },
+   {
+      "id":9      i32,
+      "alias":"Woodrow",
+      "name":"WoodrowNehling",
+      "user-since":      datetime("2005-09-20T10:10:00.000      Z"),
+      "friend-ids":{
+         {
+            3            i32,
+            10            i32
+         }
+      },
+      "employment":[
+         {
+            "organization-name":"Zuncan",
+            "start-date":date("2003-04-22"),
+            "end-date":date("2009-12-13")
+         }
+      ]
+   },
+   {
+      "id":10      i32,
+      "alias":"Bram",
+      "name":"BramHatch",
+      "user-since":      datetime("2010-10-16T10:10:00.000      Z"),
+      "friend-ids":{
+         {
+            1            i32,
+            5            i32,
+            9            i32
+         }
+      },
+      "employment":[
+         {
+            "organization-name":"physcane",
+            "start-date":date("2007-06-05"),
+            "end-date":date("2011-11-05")
+         }
+      ]
+   },
+   {
+      "id":3      i32,
+      "alias":"Emory",
+      "name":"EmoryUnk",
+      "user-since":      datetime("2012-07-10T10:10:00.000      Z"),
+      "friend-ids":{
+         {
+            1            i32,
+            5            i32,
+            8            i32,
+            9            i32
+         }
+      },
+      "employment":[
+         {
+            "organization-name":"geomedia",
+            "start-date":date("2010-06-17"),
+            "end-date":date("2010-01-26")
+         }
+      ]
+   },
+   {
+      "id":5      i32,
+      "alias":"Von",
+      "name":"VonKemble",
+      "user-since":      datetime("2010-01-05T10:10:00.000      Z"),
+      "friend-ids":{
+         {
+            3            i32,
+            6            i32,
+            10            i32
+         }
+      },
+      "employment":[
+         {
+            "organization-name":"Kongreen",
+            "start-date":date("2010-11-27"),
+            "end-date":null
+         }
+      ]
+   },
+   {
+      "id":7      i32,
+      "alias":"Suzanna",
+      "name":"SuzannaTillson",
+      "user-since":      datetime("2012-08-07T10:10:00.000      Z"),
+      "friend-ids":{
+         {
+            6            i32
+         }
+      },
+      "employment":[
+         {
+            "organization-name":"Labzatron",
+            "start-date":date("2011-04-19"),
+            "end-date":null
+         }
+      ]
+   }
+]
+```

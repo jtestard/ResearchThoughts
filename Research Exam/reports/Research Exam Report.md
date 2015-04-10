@@ -10,6 +10,9 @@ Our goals are to :
  - Describe the challenges the polyglot persistence problem creates.
  - For each challenge, describe the solutions found so far if they exist. If more than one solution exist for any given problems, compare the tradeoffs between solutions.
 
+There are some parallels between use cases and challenges. Not all uses cases care most about the same challenges : for example adaptive stream QP does not care so much about inter-database integrity. 
+ 
+
 ##### Note to self
 
 Do not restrict yourself to systems which explicitly consider polyglot persistence as a goal. PP is a very new problem and such systems are very few in numbers. Rather, consider the challenge dimensions individually and compare any solution to them (old or new).

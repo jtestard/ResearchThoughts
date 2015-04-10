@@ -1,0 +1,8 @@
+### Summary from April 3rd Meeting
+
+ - Add the with clause construct to the Asterix SQL++ Interface  (Asterix SQL++). [DONE] 
+ - If the running example query (from the Data Access paper) is executed on Asterix SQL++, the Asterix SQL++ optimizer will choose a plan with a denormalized set rewriting. With the let clause, we can rewrite the query (manually) and “force” the Asterix SQL++ optimizer to use a normalized set rewriting instead. We can compare both options in terms of run time on the running example. [IN PROGRESS]
+ - However, the normalized set rewriting from the submitted paper version has a bug when nulls and missing are involved. We can show a query involving those bugs. [DONE]
+ - There are also cases in which the normalized set rewritings are outperformed by denormalized-sets, especially when joins are selective and base tables are big.
+
+Tell me if there is anything I missed.
