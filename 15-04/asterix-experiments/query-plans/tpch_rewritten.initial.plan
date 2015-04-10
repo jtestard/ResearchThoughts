@@ -1,0 +1,52 @@
+distribute result [%0->$$50] -- |UNPARTITIONED|
+  project ([$$50]) -- |UNPARTITIONED|
+    assign [$$50] <- [function-call: asterix:open-record-constructor, Args:[AString: {nation_key}, function-call: asterix:field-access-by-name, Args:[%0->$$0, AString: {nation_key}], AString: {nation_name}, function-call: asterix:field-access-by-name, Args:[%0->$$0, AString: {nation_name}], AString: {aggregates}, function-call: asterix:field-access-by-name, Args:[%0->$$14, AString: {aggregates}]]] -- |UNPARTITIONED|
+      outer-unnest $$14 <- function-call: asterix:scan-collection, Args:[%0->$$49] -- |UNPARTITIONED|
+        subplan {
+                  aggregate [$$49] <- [function-call: asterix:listify, Args:[%0->$$13]] -- |UNPARTITIONED|
+                    select (function-call: algebricks:eq, Args:[function-call: asterix:field-access-by-name, Args:[%0->$$0, AString: {nation_key}], function-call: asterix:field-access-by-name, Args:[%0->$$13, AString: {nation_key}]]) -- |UNPARTITIONED|
+                      unnest $$13 <- function-call: asterix:scan-collection, Args:[%0->$$45] -- |UNPARTITIONED|
+                        subplan {
+                                  aggregate [$$45] <- [function-call: asterix:listify, Args:[%0->$$39]] -- |UNPARTITIONED|
+                                    assign [$$39] <- [function-call: asterix:open-record-constructor, Args:[AString: {nation_key}, %0->$$10, AString: {aggregates}, %0->$$44]] -- |UNPARTITIONED|
+                                      subplan {
+                                                aggregate [$$44] <- [function-call: asterix:listify, Args:[%0->$$41]] -- |UNPARTITIONED|
+                                                  assign [$$41] <- [function-call: asterix:open-record-constructor, Args:[AString: {order_year}, function-call: asterix:field-access-by-name, Args:[%0->$$12, AString: {order_year}], AString: {list_price}, function-call: asterix:field-access-by-name, Args:[%0->$$12, AString: {list_price}]]] -- |UNPARTITIONED|
+                                                    limit AInt32: {3} -- |UNPARTITIONED|
+                                                      order (DESC, function-call: asterix:field-access-by-name, Args:[%0->$$12, AString: {order_year}])  -- |UNPARTITIONED|
+                                                        unnest $$12 <- function-call: asterix:scan-collection, Args:[%0->$$38] -- |UNPARTITIONED|
+                                                          nested tuple source -- |UNPARTITIONED|
+                                             } -- |UNPARTITIONED|
+                                        group by ([$$10 := function-call: asterix:field-access-by-name, Args:[%0->$$9, AString: {nation_key}]]) decor ([]) {
+                                                  aggregate [$$38] <- [function-call: asterix:listify, Args:[%0->$$11]] -- |UNPARTITIONED|
+                                                    nested tuple source -- |UNPARTITIONED|
+                                               } -- |UNPARTITIONED|
+                                          assign [$$11] <- [function-call: asterix:open-record-constructor, Args:[AString: {ppy}, %0->$$9, AString: {price_per_year}, %0->$$1]] -- |UNPARTITIONED|
+                                            unnest $$9 <- function-call: asterix:scan-collection, Args:[%0->$$1] -- |UNPARTITIONED|
+                                              assign [$$1] <- [%0->$$35] -- |UNPARTITIONED|
+                                                subplan {
+                                                          aggregate [$$35] <- [function-call: asterix:listify, Args:[%0->$$30]] -- |UNPARTITIONED|
+                                                            assign [$$30] <- [function-call: asterix:open-record-constructor, Args:[AString: {nation_key}, %0->$$6, AString: {order_year}, %0->$$5, AString: {list_price}, function-call: asterix:sql-sum, Args:[%0->$$34]]] -- |UNPARTITIONED|
+                                                              subplan {
+                                                                        aggregate [$$34] <- [function-call: asterix:listify, Args:[%0->$$33]] -- |UNPARTITIONED|
+                                                                          assign [$$33] <- [function-call: asterix:field-access-by-name, Args:[function-call: asterix:field-access-by-name, Args:[%0->$$8, AString: {o}], AString: {total_price}]] -- |UNPARTITIONED|
+                                                                            unnest $$8 <- function-call: asterix:scan-collection, Args:[%0->$$29] -- |UNPARTITIONED|
+                                                                              nested tuple source -- |UNPARTITIONED|
+                                                                     } -- |UNPARTITIONED|
+                                                                group by ([$$5 := function-call: asterix:field-access-by-name, Args:[%0->$$3, AString: {order_year}]; $$6 := function-call: asterix:field-access-by-name, Args:[%0->$$2, AString: {nation_key}]]) decor ([]) {
+                                                                          aggregate [$$29] <- [function-call: asterix:listify, Args:[%0->$$7]] -- |UNPARTITIONED|
+                                                                            nested tuple source -- |UNPARTITIONED|
+                                                                       } -- |UNPARTITIONED|
+                                                                  assign [$$7] <- [function-call: asterix:open-record-constructor, Args:[AString: {c}, %0->$$4, AString: {n}, %0->$$2, AString: {o}, %0->$$3]] -- |UNPARTITIONED|
+                                                                    select (function-call: algebricks:and, Args:[function-call: algebricks:eq, Args:[function-call: asterix:field-access-by-name, Args:[%0->$$2, AString: {nation_key}], function-call: asterix:field-access-by-name, Args:[%0->$$4, AString: {nation_ref}]], function-call: algebricks:eq, Args:[function-call: asterix:field-access-by-name, Args:[%0->$$4, AString: {cust_key}], function-call: asterix:field-access-by-name, Args:[%0->$$3, AString: {cust_ref}]]]) -- |UNPARTITIONED|
+                                                                      unnest $$4 <- function-call: asterix:dataset, Args:[AString: {Customers}] -- |UNPARTITIONED|
+                                                                        unnest $$3 <- function-call: asterix:dataset, Args:[AString: {Orders}] -- |UNPARTITIONED|
+                                                                          unnest $$2 <- function-call: asterix:dataset, Args:[AString: {Nations}] -- |UNPARTITIONED|
+                                                                            nested tuple source -- |UNPARTITIONED|
+                                                       } -- |UNPARTITIONED|
+                                                  nested tuple source -- |UNPARTITIONED|
+                               } -- |UNPARTITIONED|
+                          nested tuple source -- |UNPARTITIONED|
+               } -- |UNPARTITIONED|
+          unnest $$0 <- function-call: asterix:dataset, Args:[AString: {Nations}] -- |UNPARTITIONED|
+            empty-tuple-source -- |UNPARTITIONED|
