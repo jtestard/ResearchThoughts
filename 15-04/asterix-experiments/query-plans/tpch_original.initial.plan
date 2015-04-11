@@ -5,7 +5,7 @@ distribute result [%0->$$9] -- |UNPARTITIONED|
                 aggregate [$$34] <- [function-call: asterix:listify, Args:[%0->$$31]] -- |UNPARTITIONED|
                   assign [$$31] <- [function-call: asterix:open-record-constructor, Args:[AString: {order_year}, function-call: asterix:field-access-by-name, Args:[%0->$$7, AString: {order_year}], AString: {list_price}, function-call: asterix:field-access-by-name, Args:[%0->$$7, AString: {list_price}]]] -- |UNPARTITIONED|
                     limit AInt32: {3} -- |UNPARTITIONED|
-                      order (DESC, function-call: asterix:field-access-by-name, Args:[%0->$$7, AString: {price_per_year}])  -- |UNPARTITIONED|
+                      order (DESC, function-call: asterix:field-access-by-name, Args:[%0->$$7, AString: {order_year}])  -- |UNPARTITIONED|
                         unnest $$7 <- function-call: asterix:scan-collection, Args:[%0->$$1] -- |UNPARTITIONED|
                           assign [$$1] <- [%0->$$29] -- |UNPARTITIONED|
                             subplan {

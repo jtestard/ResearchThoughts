@@ -21,10 +21,10 @@ LEFT OUTER JOIN (
 	) AS price_per_year
 	SELECT	nation_key as nation_key,
 			(
-				SELECT 	g.order_year AS order_year,
-						g.list_price AS list_price
+				SELECT 	g.ppy.order_year AS order_year,
+						g.ppy.list_price AS list_price
 				FROM group as g
-				ORDER BY g.order_year DESC
+				ORDER BY g.ppy.order_year DESC
 				LIMIT 3
 			) AS aggregates
 	FROM	price_per_year AS ppy

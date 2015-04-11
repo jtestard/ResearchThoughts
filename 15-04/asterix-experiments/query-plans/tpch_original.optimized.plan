@@ -11,13 +11,13 @@ distribute result [%0->$$9]
           exchange 
           -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
             group by ([$$40 := %0->$$57]) decor ([$$51 := %0->$$57; $$52 := %0->$$54]) {
-                      aggregate [$$34] <- [function-call: asterix:listify, Args:[function-call: asterix:closed-record-constructor, Args:[AString: {order_year}, %0->$$49, AString: {list_price}, %0->$$50]]]
+                      aggregate [$$34] <- [function-call: asterix:listify, Args:[function-call: asterix:closed-record-constructor, Args:[AString: {order_year}, %0->$$48, AString: {list_price}, %0->$$50]]]
                       -- AGGREGATE  |LOCAL|
                         limit AInt32: {3}
                         -- STREAM_LIMIT  |LOCAL|
                           order (DESC, %0->$$48) 
                           -- IN_MEMORY_STABLE_SORT [$$48(DESC)]  |LOCAL|
-                            assign [$$50, $$49, $$48] <- [function-call: asterix:field-access-by-index, Args:[%0->$$7, AInt32: {1}], function-call: asterix:field-access-by-index, Args:[%0->$$7, AInt32: {0}], function-call: asterix:field-access-by-name, Args:[%0->$$7, AString: {price_per_year}]]
+                            assign [$$50, $$48] <- [function-call: asterix:field-access-by-index, Args:[%0->$$7, AInt32: {1}], function-call: asterix:field-access-by-index, Args:[%0->$$7, AInt32: {0}]]
                             -- ASSIGN  |LOCAL|
                               unnest $$7 <- function-call: asterix:scan-collection, Args:[%0->$$29]
                               -- UNNEST  |LOCAL|

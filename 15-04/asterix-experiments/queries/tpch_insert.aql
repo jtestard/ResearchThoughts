@@ -23,12 +23,15 @@ create dataset Nations(NationType) primary key nation_key;
 create dataset Customers(CustomerType) primary key cust_key;
 create dataset Orders(OrderType) primary key order_key;
 
+create index CNationRefIdx on Customers(nation_ref);
+create index OCustRefIdx on Orders(cust_ref);
+
 // Since paths must be absolute, might have to do some edits here.
 load dataset Nations using localfs
-(("path"="127.0.0.1:///Users/julestestard/Development/asterix-experiments/generators/nations.adm"),("format"="adm"));
+(("path"="127.0.0.1:///Users/julestestard/Projects/git/ResearchThoughts/15-04/asterix-experiments/generators/nations.adm"),("format"="adm"));
 
 load dataset Customers using localfs
-(("path"="127.0.0.1:///Users/julestestard/Development/asterix-experiments/generators/customers.adm"),("format"="adm"));
+(("path"="127.0.0.1:///Users/julestestard/Projects/git/ResearchThoughts/15-04/asterix-experiments/generators/customers.adm"),("format"="adm"));
 
 load dataset Orders using localfs
-(("path"="127.0.0.1:///Users/julestestard/Development/asterix-experiments/generators/orders.adm"),("format"="adm"));
+(("path"="127.0.0.1:///Users/julestestard/Projects/git/ResearchThoughts/15-04/asterix-experiments/generators/orders.adm"),("format"="adm"));

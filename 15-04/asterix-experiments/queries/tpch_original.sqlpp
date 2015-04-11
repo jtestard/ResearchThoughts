@@ -1,5 +1,3 @@
-// Time : 3.296 sec
-// On dataset with 50 Nations, 5000 customers, 50000 orders
 use dataverse GlobalMarketplace;
 
 SELECT  n.nation_key as nation_key,
@@ -20,7 +18,7 @@ SELECT  n.nation_key as nation_key,
     SELECT  ppy.order_year as order_year,
             ppy.list_price as list_price
     FROM    price_per_year as ppy
-    ORDER BY  ppy.price_per_year DESC
+    ORDER BY  ppy.order_year DESC
     LIMIT   3
     ) as aggregates
 FROM Nations as n;
