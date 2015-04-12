@@ -177,3 +177,5 @@ The Repository Pattern is a software design pattern which centralizes all persis
 #### Diversity of "One Size" Systems
 
 Remember the figure from Babu's paper for a taxonomy of systems to be considered for PP.
+
+
