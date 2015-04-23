@@ -1,0 +1,5 @@
+#### Decorrelation rewritings
+
+ - Tuple size too large exception isn't related to the rewriting but occurs because data volumes are too big and we have group bys.
+ - investigate why this error occurs in the rewritten version of the query rather than the original.
+ - investigate why the e

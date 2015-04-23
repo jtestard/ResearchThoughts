@@ -1,0 +1,80 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{parskip}
+\usepackage{mathtools}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{url}
+\usepackage{subcaption}
+\usepackage{MnSymbol,wasysym}
+\usepackage[noend,linesnumbered]{algorithm2e}
+\usepackage{setspace} 
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+\usepackage{amssymb}
+
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
+
+\begin{document}
+
+\title{Polyglot Persistence : When One Size Does Not Fit All}
+\author{Jules Testard}
+\maketitle
+
+\begin{abstract}
+For a long time, SQL used to be the "one size fits all" solution, in the sense that any application could meet all of its requirements using only a SQL database. In the Big Data era, a number of new specialized system have emerged to meet the needs of the ever increasingly complex applications. Turing Award winner Michael Stonebreaker announced in 2006 that "the era of SQL had ended", in the sense that for any given application requirement there exists a number of new specialized system that can beat SQL to it; but there are applications whose requirements cannot be met by any single database. This led to the emergence of the so called "Polyglot Persistence" (PP) systems in which multiple specialized systems have to be used in coordination in order to meet all the requirements. Enabling such a coordination creates a number of challenges since specialized systems have been built to run independently and now have to be integrated together despite differing on a number of logical and architectural dimensions.
+
+In this paper, we survey existing architectures for PP systems. First, we look at how the surveyed systems integrate multiple specialized systems into a PP system and handle the data model and query capabilities heterogeneity among the specialized systems. Second, we look at how the surveyed PP systems distribute the query execution among the specialized systems. Third, we look at how surveyed PP systems handle storage in the specialized systems and, when relevant, provision resources for them. Fifth, how the PP system can be updated while preserving integrity in the presence of constraints and redundancy among specialized systems. Finally, we survey how PP systems can be made to allow declarative specification of features such as staleness, availability and flexibility to change in application requirements.
+\end{abstract}
+
+\section{Introduction}
+
+\input{introduction}
+
+\section{Choosing the right specialized systems}
+
+\input{choosing}
+
+\section{Integrating specialized systems}
+
+\input{integrating}
+
+\section{Optimizing queries in a PP system}
+
+\input{optimizing}
+
+\section{Storing, Scaling and Resource Provisionning}
+
+\input{cluster}
+
+\section{Updating specialized systems}
+
+\input{updating}
+
+\section{Keeping a PP system available and consistent}
+
+\input{transactions}
+
+\section{Dealing with changes in requirements}
+
+\input{changes}
+
+\section{Synthesis}
+
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
+
+\end{document}
+
+
+
+
+
+
+

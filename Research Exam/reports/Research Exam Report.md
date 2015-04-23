@@ -8,7 +8,17 @@ Our goals are to :
  - Describe why the polyglot persistence problem matters.
  - Define formally the polyglot persistence problem.
  - Describe the challenges the polyglot persistence problem creates.
+    - finding which databases to integrate
+    - how to integrate them (which architecture)
+    - heterogeneous query capabilities
+    - heterogeneous data models
+    - heterogeneous update workloads
+    - heterogeneous performance requirements (batch vs realtime)
+    - heterogeneous location of data (local, web service, cloud IaaS...)
+    - cross platform updates
  - For each challenge, describe the solutions found so far if they exist. If more than one solution exist for any given problems, compare the tradeoffs between solutions.
+   - modeling using views
+   - declarative creation of services
 
 There are some parallels between use cases and challenges. Not all uses cases care most about the same challenges : for example adaptive stream QP does not care so much about inter-database integrity. 
  
@@ -179,3 +189,19 @@ The Repository Pattern is a software design pattern which centralizes all persis
 Remember the figure from Babu's paper for a taxonomy of systems to be considered for PP.
 
 
+#### Web Services
+
+Not all data stores are necessarily owned by the user. The rise of web services has brought the need of querying them simultaneously with owned databases.
+
+
+#### Polyglot Persistence
+
+Is it also about integrating different systems/applications/files under the ownership of the same entreprise?
+
+==> Is it done for only for a performance benefit?
+
+==> Its also done for enhanced query capabilities, and an ability to cope with a variety of workloads/queries.
+
+### History of No One Size Fits
+
+Should go over previous papers and their discussion on the topic.

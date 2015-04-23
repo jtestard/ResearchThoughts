@@ -1,6 +1,7 @@
-*.tex
 *.aux
 *.log
+*.blg
+*.bbl
 .*.md.html
 .project
 *.synctex.gz

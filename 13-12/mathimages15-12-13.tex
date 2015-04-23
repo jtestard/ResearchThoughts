@@ -1,0 +1,88 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{parskip}
+\usepackage{graphicx}
+\usepackage{float}
+\restylefloat{table}
+\usepackage{algorithm2e}
+
+% Relational algebra symbols from ftp://reports.stanford.edu/www/dbgroup_only/latex-macros.html
+\newcommand{\select}{\mbox{\Large$\sigma$}}
+\newcommand{\cross}{\mbox{$\times$}}
+\newcommand{\intersection}{\mbox{$\cap$}}
+\newcommand{\intersect}{\mbox{$\cap$}}
+\newcommand{\union}{\mbox{$\cup$}}
+\newcommand{\join}{\mbox{$\Join$}}
+\newcommand{\leftsemijoin}{\mbox{$\mathrel{\raise1pt\hbox{\vrule height5pt
+depth0pt width0.6pt\hskip-1.5pt$>$\hskip -2.5pt$<$}}$}}
+\newcommand{\rightsemijoin}{\mbox{$\mathrel{\raise1pt\hbox{\hskip-1.5pt$>$\hskip -2.5pt$<$\hskip -1.1pt\vrule height5pt
+depth0pt width0.6pt}}$}}
+\newcommand{\project}{\mbox{\Large$\pi$}}
+\newcommand{\Project}{\mbox{$\Pi$}}
+\newcommand{\aggregatefn}{\mbox{\Large$G$}}
+
+\begin{document}
+\section*{Observations}
+
+\begin{itemize}
+\item{If $A \join B$ is condensing/expansive, then so is $A \leftsemijoin B$.}
+\item{We assume identical operators (identical type with identical configuration) have identical cost across sites.}
+\end{itemize}
+
+Given two relations $A$ and $B$, an aggregation operator $\gamma_{i,j \rightarrow k}$ where $i$ is the set of grouping attributes, $j$ is the set of aggregated attributes and $k$ is the set of output attributes, and some join operator $\join_D$ for with join predicates $D$. One and only one of the following has to be true in a query plan involving $A$,$B$,$\gamma$ and $\join$:
+ \begin{enumerate}
+\item{$\project_{i,k}(\gamma_{i,j \rightarrow k}(A) \join_D B) = \gamma(A \join B) $ This happens if $i$ and $j$'s predicates only depend on a single relation ($A$ or $B$) and attributes from $k$ are not used in $D$ and all attributes in $D$ are distinct [and maybe more conditions].}
+\item{ $\gamma_{i,j \rightarrow k} (A \join_D B)$. This happens if $i$ and $j$'s predicates depend on both relations or if $D$ depends on an attribute in $j$.}
+\item{$\gamma_{i,j \rightarrow k}(A) \join_D B$. This happens if $i$ and $j$'s predicates only depend on a single relation $A$ and $D$ does not depend on an attribute in $j$.}
+\item{$\gamma_{i,j \rightarrow k}(A) \join_D \gamma_{i',j' \rightarrow k'}(B)$. This happens if $i/i'$ and $j/j'$'s predicates only depend on a single relation $A/B$ and $D$ does not depend on an attribute in $j$ or $j'$.}
+\end{enumerate}
+
+Case 1 is a very restricted class of queries and maybe the class is even smaller than I believe it is (I haven't found exceptions yet, but there might be some). Therefore I do not consider in what follows next.
+
+\pagebreak
+\section*{Secenario}
+
+\pagebreak
+\section*{Equivalence Rules}
+
+Assuming notation previously introduced and the use of primary keys for $A$ and $B$, here is the equivalence rule used for the "classical" semi join reduction:
+\begin{align*}
+A \join_D B & = A \join_C ( B \leftsemijoin_D \project_C(A) )\\
+& = (A \leftsemijoin_D \project_{C'}(B)) \join_D B\\
+\end{align*}
+where $C$ is the list of attributes of $A$ which appear in $D$ and $C'$ the list of attributes in $B$ which appear in $D$. Note that commutative equivalences are not shown here but they exist given the commutativity of the join operator.\\
+
+Now if we add aggregation, we have two extra equivalence rules :
+\begin{itemize}
+\item{ All attributes in predicates in $i,j$ and $D$ which refer to attributes in relation $A$ have to be present in $C$. 
+\begin{align*}
+\gamma_{i,j \rightarrow k}(A) \join_D B = (\gamma_{i,j \rightarrow k}(A) \leftsemijoin_D  \project_C(B)) \join_D B\\
+\end{align*}}
+\item{All attributes in predicates in $i/i',j/j'$ and $D$ which refer to attributes in relation $A/B$ have to be present in $C$.
+\begin{align*}
+\gamma_{i,j \rightarrow k}(A) \join_D \gamma_{i',j' \rightarrow k'}(B) = (\gamma_{i,j \rightarrow k}(A) \leftsemijoin_D  \project_C(\gamma_{i',j' \rightarrow k'}(B))) \join_D \gamma_{i',j' \rightarrow k'}(B) \\
+\end{align*}}
+\end{itemize}
+
+\pagebreak
+\section*{Semi-join process with aggregation}
+
+\subsection*{Usefulness}
+The use of semi-join reduction is useful when, assuming $|A| < |B|$ :
+\begin{align*}
+ec(A) + ec( R = A \join B) + ec(\gamma(R)) & \ge \\
+ec(S = \project(A)) + tc(S) + ec (S' = S \leftsemijoin B) & + ec (S'' = \gamma(S')) + tc(S'') + ec(A \join S'')
+\end{align*}
+where $ec(R)$ is the execution cost of an operator and $tc(R)$ is the transfer cost of the output table of the operator.
+\pagebreak
+
+
+\section*{Set Vs Bag Semantics}
+The problem of set vs bag semantics asks itself in the context of semi join reduction when joining back with the relation $A$ on site 1. When using set semantics with primary keys for all relations, the primary key should be projected along other required attributes of $A$ in the first step of the semi-join reduction process. When using bag semantics, 
+
+
+
+\end{document}

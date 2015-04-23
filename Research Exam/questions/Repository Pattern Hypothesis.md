@@ -50,3 +50,7 @@ Need to verify :
 
  - Show that any retrieve function exposed by the repository module is is equivalent to a GAV view.
  - Show that the update function exposed by the repository module is equivalent to an update of a GAV view
+
+### Dummies : Why Polyglot persistence
+
+ - Multiple data models

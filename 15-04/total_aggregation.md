@@ -10,7 +10,7 @@ The reason simply being that the SQL++ semantics would consider this query as a 
 
 ```
 SELECT COUNT(group)
-FROM Nations;
+FROM Nations as n;
 ```
 
 but there are no `group`s generated in the case of total aggregation.
