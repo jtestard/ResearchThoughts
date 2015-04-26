@@ -34,13 +34,67 @@ Moreover, the authors have made several realizations that made several web-servi
 
 ## Martin Fowler
 
+Describes polyglot persistence. 
+
 ## Cyclops No One Size Fits All
+
+ - Behavioral Targeting application
+
+Describe challenges about creating PP systems, in particular in the context of streaming engines : 
+Identified by others :
+
+ - Shivnath Babu : DBMS+ system
+   - How to integrate systems into the database middleware
+   - Which systems to include in the database middleware
+   - Which (distributed) execution plan to pick
+   - How to provision resources : adapt to unusual workload?
+   - How is the data stored : coupling storage and compute systems?
+   - Describe what application requirements are
+
+Provides a good example of situation where multiple specialized systems are needed :
+
+ - Query 1 :
+   - Long slide size 
+   - High arrival rate
+ - Query 2 :
+   - Very Short slide size 
+   - Medium-High arrival rate
+ - Query 3 :
+   - Less short slide size 
+   - Medium-High arrival rate
+
+Experimental Results :
+
+ - Query 1 :
+   - Hadoop is the best
+ - Query 2 :
+   - Esper is the best
+ - Query 3 :
+   - Storm is the best
+
+Database Features :
+
+ - Query 1 :
+   - slide size is long => analytical is OK.
+   - High arrival rate + long slide size = lots of data. Need a horizontally scalable solution.
+   - Hadoop is the best choice
+ - Query 2 :
+   - Very Short slide size => operational is the only option.
+   - Medium-High arrival rate + short slide size = "little" data. Single node solution is OK.
+   - Esper is the best choice
+ - Query 3 :
+   - Less short slide size => operational is the only option.
+   - Medium-High arrival rate
+   - Storm is the best choice
+
 
 ## The End of An Architectural Era (It's time for a complete rewrite)
 
 For a long time, SQL used to be the "one size fits all" solution, in the sense that any application could meet all of its requirements using only a SQL database. In the Big Data era, a number of new specialized systems have emerged to meet the needs of the ever increasingly complex applications. Turing Award winner Michael Stonebreaker announced in 2006 that "the era of SQL has ended", in the sense that for any given application requirement there exists a number of new specialized systems that can beat RDBMSes to it; but there are applications whose requirements cannot be met by any single database. This led to the emergence of the so called "Polyglot Persistence" (PP) systems in which multiple specialized systems have to be used in coordination in order to meet all the requirements. Enabling such a coordination creates a number of challenges since specialized systems have been built to run independently and now have to be integrated together despite differing on a number of logical and architectural dimensions.
 
 ## Data Integration over NoSQL Stores using Access Path Based Mappings
+
+ - medical and drug information application
 
 They are building a mediator style system to integrate SQL and NoSQL stores. Their approach is to query the mediator using conjunctive SQL queries. Query is transformed into specialized system language through a mapping language called BQL. The authors use the traditional global as view approach where the queries over the views of the global schema get mapped to queries over the local schemas. However, they also store within that mapping the preferred access path (access path is akin to a query plan : which table should i be querying in the underlying sources in the presence of redundant information and NoSQL indices). Query plans are only defined/available for keys and indices of the NoSQL store. 
 
@@ -57,6 +111,12 @@ Once the queries are transformed to BQL, it b
 ## Max Stream
 
 ## SmartCIS
+
+ - Application Example : smart building application.
+ - What are they trying to integrate : streams and static data sources. On site sensors (physical), data from the web, machine configurations (digital). Streaming data may come from sensors or the web.
+ - Integration point : single which uses SQL query language and the relational model.
+ - architecture uses two run time systems (one for physical sensors and one for digital sensors). Queries are decomposed from the federated optimizer into two subqueries, one for the stream engine and one for the sensor engine.
+ - Each such engine is itself an integration system which integrates purely "digital" streams and purely sensor data, respectively.
 
 ## Nathan Marz : Lambda Architecture
 
@@ -76,3 +136,14 @@ Will have to reference the grid they show on page 96, because our project will h
 Provides a unifying REST API to talk to multiple specialized systems (key-value, document and relational stores). Lacks a declarative query language and any expressiveness beyond simple key retrieval (no joins, group bys...).  Does not provide any transactional guarantees. 
 
 Note : StoneBreaker outlines the problems about using NoSQL databases and their heterogeneous APIs. StoneBreaker on NoSQL and entreprises.
+
+## Model Drive Cloud Data Storage
+
+This paper attempts to separate the logical data model from specificities of the underlying storage applications. Provides a solution for the challenge 1 : choosing which stores to use.
+
+## Invisible Glue : Scalable Self-Tuning Multi-Stores
+
+- Customer Management Relationship application (CRM) example
+- Does not try to provide a single data model/query language. Instead, each dataset is queried using it's native query language.
+- 
+
