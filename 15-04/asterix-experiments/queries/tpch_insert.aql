@@ -9,13 +9,14 @@ create type NationType as closed {
 
 create type CustomerType as closed {
 	cust_key : int32,
-	nation_ref : int32
+	nation_ref : int32,
+	amount_spent : int32
 }
 
 create type OrderType as closed {
 	order_key : int32,
 	cust_ref : int32,
-	order_year : string,
+	order_year : int32,
 	total_price : double
 }
 
@@ -35,3 +36,7 @@ load dataset Customers using localfs
 
 load dataset Orders using localfs
 (("path"="127.0.0.1:///Users/julestestard/Projects/git/ResearchThoughts/15-04/asterix-experiments/generators/orders.adm"),("format"="adm"));
+
+insert into dataset Nations (
+	{ "nation_key" : 0, "nation_name" : "secret" }
+);

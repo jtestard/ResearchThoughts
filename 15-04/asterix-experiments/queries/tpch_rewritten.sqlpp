@@ -1,33 +1,40 @@
 use dataverse GlobalMarketplace;
 
-SELECT 	lefts.nation_key as nation_key,
-		lefts.nation_name as nation_name,
-		rights.aggregates as aggregates
-FROM Nations as lefts
+SELECT  l.nation_key AS nation_key,
+        l.nation_name AS nation_name,
+        r.N AS aggregates
+FROM Nations AS l
 LEFT OUTER JOIN (
-	WITH (
-		SELECT 	nation_key AS nation_key,
-				order_year AS order_year,
-	            sql-sum (
-	                ( SELECT ELEMENT g.o.total_price
-	                  FROM group as g )
-	            ) AS list_price
-		FROM 	Nations as n,
-				Orders as o,
-				Customers as c
-		WHERE 	n.nation_key = c.nation_ref AND c.cust_key = o.cust_ref
-		GROUP BY 	o.order_year as order_year,
-					n.nation_key as nation_key
-	) AS price_per_year
-	SELECT	nation_key as nation_key,
-			(
-				SELECT 	g.ppy.order_year AS order_year,
-						g.ppy.list_price AS list_price
-				FROM group as g
-				ORDER BY g.ppy.order_year DESC
-				LIMIT 3
-			) AS aggregates
-	FROM	price_per_year AS ppy
-	GROUP BY	ppy.nation_key AS nation_key
-) as rights
-ON lefts.nation_key = rights.nation_key;
+		  SELECT nid AS nid,
+		  		 (
+		  		   SELECT g.x.order_year AS order_year,
+		  		   		  g.x.list_price AS list_price
+		  		   FROM group AS g
+	 		       ORDER BY g.x.order_year DESC // All have the same id, no need to group by id
+	   	    	   LIMIT 3
+		  		 ) AS N
+          FROM (
+	      	  SELECT nid AS nid,
+	                 order_year AS order_year,
+	                 sql-sum(o.total_price) AS list_price
+	          FROM  Orders AS o,
+	                Customers AS c,
+	                Nations AS n
+	    	  WHERE o.cust_ref = c.cust_key and
+	        	    c.nation_ref = n.nation_key
+	          GROUP BY n.nation_key AS nid, o.order_year AS order_year
+          ) AS x
+          GROUP BY x.nid AS nid
+        ) AS r
+ON l.nation_key = r.nid;
+
+
+
+Expect Output on 5 nations : 
+
+{ "nation_key": 1i32, "nation_name": "Saint Lucia", "aggregates": [ { "order_year": 2015i32, "list_price": 6061.4800000000005d }, { "order_year": 2014i32, "list_price": 6731.2699999999995d }, { "order_year": 2013i32, "list_price": 6555.130000000001d } ] }
+{ "nation_key": 2i32, "nation_name": "Belgium", "aggregates": [ { "order_year": 2015i32, "list_price": 6191.18d }, { "order_year": 2014i32, "list_price": 4940.8d }, { "order_year": 2013i32, "list_price": 5734.91d } ] }
+{ "nation_key": 4i32, "nation_name": "Sao Tome and Principe", "aggregates": [ { "order_year": 2015i32, "list_price": 5176.12d }, { "order_year": 2014i32, "list_price": 7524.48d }, { "order_year": 2013i32, "list_price": 5769.9400000000005d } ] }
+{ "nation_key": 0i32, "nation_name": "secret", "aggregates": null }
+{ "nation_key": 3i32, "nation_name": "Viet Nam", "aggregates": [ { "order_year": 2015i32, "list_price": 7344.119999999999d }, { "order_year": 2014i32, "list_price": 6918.0700000000015d }, { "order_year": 2013i32, "list_price": 7131.539999999999d } ] }
+{ "nation_key": 5i32, "nation_name": "Sudan", "aggregates": [ { "order_year": 2015i32, "list_price": 7525.139999999999d }, { "order_year": 2014i32, "list_price": 8096.909999999999d }, { "order_year": 2013i32, "list_price": 6773.179999999999d } ] }

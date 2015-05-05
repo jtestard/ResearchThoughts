@@ -6,55 +6,62 @@ Assume the following SQL++ environment :
 
 ```
 Nations = {{
-	{ id : 1, name : "USA" },
-	{ id : 2, name : "China" }
+	{ nation_key : 1, nation_name : "USA" },
+	{ nation_key : 2, nation_name : "China" }
 }}
 
 Customers = {{
-	{ id : 1, nation_ref : 1, spent : 20}
-	{ id : 2, nation_ref : 1, spent : 40}
+	{ cust_key : 1, nation_ref : 1, amount_spent : 20}
+	{ cust_key : 2, nation_ref : 1, amount_spent : 40}
 }}
 ```
 
 Consider the following SQL++ tuple-at-a-time query, which gives
-for each nation the average number of orders per customer :
+for each nation the average amount spent by its customers :
 
 ```
-SELECT	n.name AS name,
+use dataverse GlobalMarketplace;
+
+SELECT  n.nation_name AS name,
 		(  
-			SELECT ELEMENT count(group.spent)
+			SELECT ELEMENT sum(c.amount_spent)
 			FROM Customers AS c
-			WHERE c.nation_ref = n.id
-			GROUP BY nothing
-		) AS dollar_spent
+			WHERE c.nation_ref = n.nation_key
+			GROUP BY n.nation_key AS id
+		) AS amount_spent
 FROM 	Nations AS n;
 
 Result :
-{ name : "USA", "dollar_spent" : 60 }
-{ name : "China", "dollar_spent" : null }
+{ name : "USA", "amount_spent" : {{ 60 }} }
+{ name : "China", "amount_spent" : {{ }} }
 ```
 
-And its (almost) set-at-a-time counterpart :
+And its almost set-at-a-time counterpart :
 
 ```
-SELECT	left.name AS name,
-		right.spent AS dollar_spent
-FROM 	Nations AS left
+use dataverse GlobalMarketplace;
+
+SELECT	l.nation_name AS nation_name,
+		r.N AS amount_spent
+FROM 	Nations AS l
 LEFT OUTER JOIN (
-	SELECT	nid as id,
-			count(group.spent)* AS spent
-	FROM Customers as c, Nations as n
-	WHERE c.nation_ref = n.id
-	GROUP BY nothing
-	GROUP BY n.id as nid
-) as right
-ON left.id = right.id;
+	SELECT nid as nid,
+	       (SELECT ELEMENT g.x.spent FROM group AS g) as N
+    FROM ( SELECT nid as nid,
+			    sum(c.amount_spent) AS spent
+	  FROM Customers as c, Nations as n
+	  WHERE c.nation_ref = n.nation_key
+	  GROUP BY n.nation_key as nid
+	) AS x
+	GROUP BY x.nid as nid
+) as r
+ON l.nation_key = r.nid;
 
 Result :
-{ name : "USA", "dollar_spent" : 60 }
+{ name : "USA", "dollar_spent" : {{ 60 }} }
 { name : "China", "dollar_spent" : missing }
 ```
 
-\* : Syntactic sugar for `count(SELECT ELEMENT g.spent FROM group as g)`.
+\* : where `group.x.spent` evaluates to `(SELECT ELEMENT g.x.spent FROM group as g)`.
 
-China has no customers, and `count()` returns `0` when the input list is empty (1st query) while `right.dollar_spent` is `null` if no customers are found for a given nation (2nd query).
+It is not quite possible to generate exactly the decorrelation rewriting using SQL++, because the rewriting happens on algebra, and the decorrelation rewriting algebraic plan can't quite be rewritten using Asterix.

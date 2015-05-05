@@ -2,23 +2,48 @@ use dataverse GlobalMarketplace;
 
 SELECT  n.nation_key as nation_key,
         n.nation_name as nation_name,
-    (
-      WITH (
-        SELECT  order_year AS order_year,
-                sql-sum (
-                ( SELECT ELEMENT g.o.total_price
-                  FROM group as g )
-                ) AS list_price
-        FROM  Orders as o,
-              Customers as c
-        WHERE o.cust_ref = c.cust_key and
-              c.nation_ref = n.nation_key
-        GROUP BY o.order_year as order_year
-      ) AS price_per_year
-    SELECT  ppy.order_year as order_year,
-            ppy.list_price as list_price
-    FROM    price_per_year as ppy
-    ORDER BY  ppy.order_year DESC
-    LIMIT   3
-    ) as aggregates
+        (
+          SELECT  order_year as order_year,
+                  sql-sum(o.total_price) as list_price
+          FROM  Orders as o,
+                Customers as c
+          WHERE o.cust_ref = c.cust_key and
+                c.nation_ref = n.nation_key
+          GROUP BY o.order_year as order_year
+          ORDER BY order_year DESC
+          LIMIT   3
+        ) as aggregates
 FROM Nations as n;
+
+Expected Output on 5 nations :
+
+{ "nation_key": 1i32, "nation_name": "Saint Lucia", "aggregates": [ { "order_year": 2015i32, "list_price": 6061.479999999999d }, { "order_year": 2014i32, "list_price": 6731.269999999999d }, { "order_year": 2013i32, "list_price": 6555.130000000001d } ] }
+{ "nation_key": 2i32, "nation_name": "Belgium", "aggregates": [ { "order_year": 2015i32, "list_price": 6191.179999999996d }, { "order_year": 2014i32, "list_price": 4940.799999999998d }, { "order_year": 2013i32, "list_price": 5734.9100000000035d } ] }
+{ "nation_key": 4i32, "nation_name": "Sao Tome and Principe", "aggregates": [ { "order_year": 2015i32, "list_price": 5176.120000000001d }, { "order_year": 2014i32, "list_price": 7524.480000000001d }, { "order_year": 2013i32, "list_price": 5769.940000000002d } ] }
+{ "nation_key": 0i32, "nation_name": "secret", "aggregates": [  ] }
+{ "nation_key": 3i32, "nation_name": "Viet Nam", "aggregates": [ { "order_year": 2015i32, "list_price": 7344.120000000003d }, { "order_year": 2014i32, "list_price": 6918.07d }, { "order_year": 2013i32, "list_price": 7131.539999999999d } ] }
+{ "nation_key": 5i32, "nation_name": "Sudan", "aggregates": [ { "order_year": 2015i32, "list_price": 7525.140000000001d }, { "order_year": 2014i32, "list_price": 8096.9100000000035d }, { "order_year": 2013i32, "list_price": 6773.180000000002d } ] }
+
+AQL equivalent :
+
+use dataverse GlobalMarketplace;
+
+for $n in dataset Nations
+where $n.nation_key = 0
+return {
+  "nation_key" : $n.nation_key,
+  "nation_name" : $n.nation_name,
+  "aggregates" : (
+     for $o in dataset Orders
+     for $c in dataset Customers
+     where $o.cust_ref = $c.cust_key and $c.nation_ref = $n.nation_key
+     let $group := { "o" : $o, "c" : $c, "n" : $n } 
+     group by $order_year := $o.order_year with $group
+     order by $order_year desc
+     limit 3
+     return {
+        "order_year" : $order_year,
+        "list_price" : sql-sum(for $g in $group return $g.o.total_price)
+     }
+  )
+}

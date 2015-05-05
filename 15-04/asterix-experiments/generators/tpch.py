@@ -82,7 +82,8 @@ def generate_dataset():
     for i in xrange(customer_count):
         dataset.append({
             'cust_key' : i+1,
-            'nation_ref' : randint(1,nation_count)
+            'nation_ref' : randint(1,nation_count),
+            'amount_spent' : randint(1,20)
         })
 
     write_to_file(dataset,'customers.adm')
@@ -95,7 +96,7 @@ def generate_dataset():
         dataset.append({
             'order_key' : i+1,
             'cust_ref' : randint(1,customer_count),
-            'order_year' : order_years[randint(0,14)],
+            'order_year' : int(order_years[randint(0,14)]),
             'total_price' : round(uniform(1,100),2)
         })
     

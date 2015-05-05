@@ -1,36 +1,31 @@
 use dataverse GlobalMarketplace;
 
-
-
-
-SELECT 	lefts.nation_key as nation_key,
-		lefts.nation_name as nation_name,
-		rights.aggregates as aggregates
-FROM TmpNations as lefts
+SELECT  l.nation_key AS nation_key,
+        l.nation_name AS nation_name,
+        r.N AS aggregates
+FROM Nations AS l
 LEFT OUTER JOIN (
-	WITH (
-		SELECT 	nation_key AS nation_key,
-				order_year AS order_year,
-	            sql-sum (
-	                ( SELECT ELEMENT g.o.total_price
-	                  FROM group as g )
-	            ) AS list_price
-		FROM 	TmpNations as n,
-				Orders as o,
-				Customers as c
-		WHERE 	n.nation_key = c.nation_ref AND c.cust_key = o.cust_ref AND n.nation_key = 1
-		GROUP BY 	o.order_year as order_year,
-					n.nation_key as nation_key
-	) AS price_per_year
-	SELECT	nation_key as nation_key,
-			(
-				SELECT 	g.ppy.order_year AS order_year,
-						g.ppy.list_price AS list_price
-				FROM group as g
-				ORDER BY g.ppy.order_year DESC
-				LIMIT 3
-			) AS aggregates
-	FROM	price_per_year AS ppy
-	GROUP BY	ppy.nation_key AS nation_key
-) as rights
-ON lefts.nation_key = rights.nation_key;
+		  SELECT nid AS nid,
+		  		 (
+		  		   SELECT g.x.order_year AS order_year,
+		  		   		  g.x.list_price AS list_price
+		  		   FROM group AS g
+	 		       ORDER BY g.x.order_year DESC // All have the same id, no need to group by id
+	   	    	   LIMIT 3
+		  		 ) AS N
+          FROM (
+	      	  SELECT nid AS nid,
+	                 order_year AS order_year,
+	                 sql-sum(o.total_price) AS list_price
+	          FROM  Orders AS o,
+	                Customers AS c,
+	                Nations AS n
+	    	  WHERE o.cust_ref = c.cust_key and
+	        	    c.nation_ref = n.nation_key and
+	        	    n.nation_key = 1
+	          GROUP BY n.nation_key AS nid, o.order_year AS order_year
+          ) AS x
+          GROUP BY x.nid AS nid
+        ) AS r
+ON l.nation_key = r.nid
+WHERE l.nation_key = 1;

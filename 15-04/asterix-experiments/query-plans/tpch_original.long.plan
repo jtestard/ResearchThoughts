@@ -1,0 +1,109 @@
+distribute result [%0->$$9]
+-- DISTRIBUTE_RESULT  |PARTITIONED|
+  exchange 
+  -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+    project ([$$9])
+    -- STREAM_PROJECT  |PARTITIONED|
+      assign [$$9] <- [function-call: asterix:closed-record-constructor, Args:[AString: {nation_key}, %0->$$32, AString: {nation_name}, %0->$$42, AString: {aggregates}, %0->$$29]]
+      -- ASSIGN  |PARTITIONED|
+        exchange 
+        -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+          group by ([$$32 := %0->$$46]) decor ([$$42 := %0->$$43]) {
+                    aggregate [$$29] <- [function-call: asterix:listify, Args:[function-call: asterix:closed-record-constructor, Args:[AString: {order_year}, %0->$$3, AString: {list_price}, %0->$$39]]]
+                    -- AGGREGATE  |LOCAL|
+                      limit AInt32: {3}
+                      -- STREAM_LIMIT  |LOCAL|
+                        order (DESC, %0->$$3) 
+                        -- IN_MEMORY_STABLE_SORT [$$3(DESC)]  |LOCAL|
+                          group by ([$$3 := %0->$$47]) decor ([]) {
+                                    aggregate [$$39] <- [function-call: asterix:agg-sql-sum, Args:[%0->$$45]]
+                                    -- AGGREGATE  |LOCAL|
+                                      nested tuple source
+                                      -- NESTED_TUPLE_SOURCE  |LOCAL|
+                                 }
+                          -- MICRO_PRE_CLUSTERED_GROUP_BY[$$47]  |LOCAL|
+                            select (function-call: algebricks:not, Args:[function-call: asterix:is-system-null, Args:[%0->$$45]])
+                            -- STREAM_SELECT  |LOCAL|
+                              nested tuple source
+                              -- NESTED_TUPLE_SOURCE  |LOCAL|
+                 }
+          -- PRE_CLUSTERED_GROUP_BY[$$46]  |PARTITIONED|
+            exchange 
+            -- HASH_PARTITION_MERGE_EXCHANGE MERGE:[$$46(ASC), $$47(ASC)] HASH:[$$46]  |PARTITIONED|
+              group by ([$$46 := %0->$$36; $$47 := %0->$$30]) decor ([%0->$$43]) {
+                        aggregate [$$45] <- [function-call: asterix:agg-local-sql-sum, Args:[%0->$$27]]
+                        -- AGGREGATE  |LOCAL|
+                          select (function-call: algebricks:not, Args:[function-call: algebricks:is-null, Args:[%0->$$35]])
+                          -- STREAM_SELECT  |LOCAL|
+                            nested tuple source
+                            -- NESTED_TUPLE_SOURCE  |LOCAL|
+                     }
+              -- PRE_CLUSTERED_GROUP_BY[$$36, $$30]  |PARTITIONED|
+                exchange 
+                -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+                  order (ASC, %0->$$36) (ASC, %0->$$30) 
+                  -- STABLE_SORT [$$36(ASC), $$30(ASC)]  |PARTITIONED|
+                    exchange 
+                    -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+                      project ([$$35, $$36, $$43, $$27, $$30])
+                      -- STREAM_PROJECT  |PARTITIONED|
+                        exchange 
+                        -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+                          left outer join (function-call: algebricks:eq, Args:[%0->$$37, %0->$$36])
+                          -- HYBRID_HASH_JOIN [$$36][$$37]  |PARTITIONED|
+                            exchange 
+                            -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+                              project ([$$36, $$43])
+                              -- STREAM_PROJECT  |PARTITIONED|
+                                assign [$$43] <- [function-call: asterix:field-access-by-index, Args:[%0->$$0, AInt32: {1}]]
+                                -- ASSIGN  |PARTITIONED|
+                                  exchange 
+                                  -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+                                    unnest-map [$$36, $$0] <- function-call: asterix:index-search, Args:[AString: {Nations}, AInt32: {0}, AString: {GlobalMarketplace}, AString: {Nations}, ABoolean: {false}, ABoolean: {false}, ABoolean: {false}, AInt32: {1}, %0->$$48, AInt32: {1}, %0->$$49, TRUE, TRUE, TRUE]
+                                    -- BTREE_SEARCH  |PARTITIONED|
+                                      exchange 
+                                      -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+                                        assign [$$48, $$49] <- [AInt32: {1}, AInt32: {1}]
+                                        -- ASSIGN  |PARTITIONED|
+                                          empty-tuple-source
+                                          -- EMPTY_TUPLE_SOURCE  |PARTITIONED|
+                            exchange 
+                            -- HASH_PARTITION_EXCHANGE [$$37]  |PARTITIONED|
+                              assign [$$35] <- [TRUE]
+                              -- ASSIGN  |PARTITIONED|
+                                project ([$$37, $$27, $$30])
+                                -- STREAM_PROJECT  |PARTITIONED|
+                                  exchange 
+                                  -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+                                    join (function-call: algebricks:eq, Args:[%0->$$40, %0->$$34])
+                                    -- HYBRID_HASH_JOIN [$$40][$$34]  |PARTITIONED|
+                                      exchange 
+                                      -- HASH_PARTITION_EXCHANGE [$$40]  |PARTITIONED|
+                                        project ([$$27, $$40, $$30])
+                                        -- STREAM_PROJECT  |PARTITIONED|
+                                          assign [$$27, $$30, $$40] <- [function-call: asterix:field-access-by-index, Args:[%0->$$1, AInt32: {3}], function-call: asterix:field-access-by-index, Args:[%0->$$1, AInt32: {2}], function-call: asterix:field-access-by-index, Args:[%0->$$1, AInt32: {1}]]
+                                          -- ASSIGN  |PARTITIONED|
+                                            project ([$$1])
+                                            -- STREAM_PROJECT  |PARTITIONED|
+                                              exchange 
+                                              -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+                                                data-scan []<-[$$33, $$1] <- GlobalMarketplace:Orders
+                                                -- DATASOURCE_SCAN  |PARTITIONED|
+                                                  exchange 
+                                                  -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+                                                    empty-tuple-source
+                                                    -- EMPTY_TUPLE_SOURCE  |PARTITIONED|
+                                      exchange 
+                                      -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+                                        project ([$$34, $$37])
+                                        -- STREAM_PROJECT  |PARTITIONED|
+                                          assign [$$37] <- [function-call: asterix:field-access-by-index, Args:[%0->$$2, AInt32: {1}]]
+                                          -- ASSIGN  |PARTITIONED|
+                                            exchange 
+                                            -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+                                              data-scan []<-[$$34, $$2] <- GlobalMarketplace:Customers
+                                              -- DATASOURCE_SCAN  |PARTITIONED|
+                                                exchange 
+                                                -- ONE_TO_ONE_EXCHANGE  |PARTITIONED|
+                                                  empty-tuple-source
+                                                  -- EMPTY_TUPLE_SOURCE  |PARTITIONED|
