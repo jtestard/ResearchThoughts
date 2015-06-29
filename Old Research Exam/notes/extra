@@ -1,0 +1,59 @@
+We have a problem because the subject still isn't completely fixed in stone.
+
+The papers covered differ in a number of ways :
+
+#### Their setting
+
+Thrill : In a data center
+
+MaxStream : a central federator and a number of widespread streaming engines and RDBMS
+
+Estocada : A number of datasets 
+
+SOS : tries to find a common data model for NoSQL databases and a common library to interact with all of them.
+
+SmartCIS : tries to present together data coming from sensor networks, monitoring applications and dbms, for intelligent buildings.
+
+DBMS+ : obtain best performance by using system most adapted to the task. Does not expect previous data to exist, rather makes a very experimental architecture based on mediator control.
+
+Polyglot Persistence : Shows how certain storage engines are better for certain tasks and should be use together for better functionality, productivity and performance.
+
+Stonebraker : Shows well how RDBMS are out-dated.
+
+#### Their goals
+
+Multi-language integration : provide a way to query and (possibly) optimize over multiple sources.
+
+data migration : move data where it is best located.
+
+Shared storage : avoid migration if using single data center, collocate all your data.
+
+Performance : obtain better performance than if systems were located on different stores but used independantly and/or on altogether on a single platform. 
+
+### Workloads
+
+
+Operations : high volume of business transactions
+
+Analytics : 
+
+ - complex ad hoc queries
+ - Streams 
+
+
+
+Consider for a moment that streams were just another data model, then we can say that the system we are looking at are integrating and analyzing vast amounts of heterogeneous data using a variety of architectures. Those various architectures only solve a subset of the problem, therefore integration efforts are required for a complete solution.
+
+In :
+Estocada, Trill, DBMS+, PP, SOS, MISO
+
+Out : 
+MaxStream, SmartCIS
+
+
+Enough time spent looking at papers and categorizing them. Instead, look at your ultimate multi-store motivation. Stonebraker is great for motivating specialized systems, but we'll need something more specifically for multi-store store systems : some directions include performance characteristics and multi-model integration.
+
+-----------
+
+
+Continue on original abstract but accentuate the fact that there may be existing storage systems and you may want to leverage them, in addition to new systems. Also consider, for stored data the issue of moving data from one store to another. 

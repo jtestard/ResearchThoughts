@@ -1,0 +1,14 @@
+%As seen on Figure ~\ref{fig:dblandscape}, the number of options is already large and growing larger every day. For a given application requirement, it isn't always clear which option is the best. Should the application developer use a SQL or NoSQL system? Within NoSQL, should she use a key-value store, a document database or column family system? How much more performance increase will a two-system solution provide over a one-system solution? How much more of a complexity overhead will a two system solution incur over a one system solution? As Lim \& al ~\cite{Lim2013}  point out, benchmarking storage options is not easy, in particular when application requirements are not quite set in stone yet.
+
+Relevant papers : ~\cite{Castrejon2013} ~\cite{Peidro2011} ~\cite{SNIA2012} ~\cite{Carlson2012} ~\cite{Truong2011}
+
+\reminder{Jules : In this section, we show how to choose the right databases for the running example. This section will be updated later. However, for the purpose of having everything we need for the next section, we provide here the data stores which will be used by the running example : 
+\begin{itemize}
+\item{Products and Customers are to be stored on the document database MongoDB.}
+\item{Orders are to be stored on the relational database MySQL.}
+\item{The shopping cart is to be stored using the in-memory key-value store Redis.}
+\item{The social network is to be stored on the graph database Neo4J.}
+\item{The user activity logs are to be written to the column-oriented store HBase.}
+\item{User activity monitoring is to be performed by Apache Storm.}
+\end{itemize}
+}

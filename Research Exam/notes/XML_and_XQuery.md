@@ -1,3 +1,0 @@
-## XML and XQuery
-
-XML 
