@@ -1,0 +1,25 @@
+\begin{table*}[h]
+\centering
+\caption{Comparison of holistic optimization frameworks}
+\label{table:comparison}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+Approach & Framework  & A   & B   & C   & D     & E           & F   \\ \hline
+Declarative Middleware & FORWARD & Yes & N/A & Yes & SQL++ & Declarative & Yes \\ \hline
+Query Batching  & DBridge & Yes & No  & No  & Java  & Imperative  & No  \\ \hline
+Query Synthesis & QBS & No  & Yes & No  & Java  & Imperative  & No  \\ \hline
+Integrated Query Language & LINQ & Yes & N/A & Yes & C\#/Visual Basic & Declarative & Yes \\ \hline
+\end{tabular}
+\caption*{
+    \begin{tabular}{l l}
+      A: & Enables set-at-a-time execution \\
+      B: & Enables database execution of imperative code fragments\\
+      C: & Requires special syntax / custom language \\
+      D: & Application programming language \\
+      E: & Application programming paradigm \\
+      F: & Targets Nested Relational Data
+    \end{tabular}
+}
+\end{table*}
+
+A comparison of the different holistic optimization approaches is shown on table \ref{table:comparison}. Both the declarative middleware and query batching approaches allow the optimization of the parameter-at-a-time execution into set-at-a-time execution, but not Query Synthesis. Note, however, that the Query Batching and Query Synthesis procedures can be applied on the same codebase, given they are independent techniques which do not require special syntax, and both approaches have a java implementation : QBS and DBridge.  Query synthesis is the only approach which can recognize and transform imperative fragments into SQL. Both Query Synthesis and Query batching can be applied to fragments written using an imperative style, while FORWARD and LINQ are the only approaches which can optimize a nested relational data access.

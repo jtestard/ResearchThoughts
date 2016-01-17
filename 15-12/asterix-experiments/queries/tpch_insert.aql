@@ -1,0 +1,42 @@
+drop dataverse GlobalMarketplace if exists;
+create dataverse GlobalMarketplace;
+use dataverse GlobalMarketplace;
+
+create type NationType as closed {
+	nation_key : int32,
+	nation_name : string
+}
+
+create type CustomerType as closed {
+	cust_key : int32,
+	nation_ref : int32,
+	amount_spent : int32
+}
+
+create type OrderType as closed {
+	order_key : int32,
+	cust_ref : int32,
+	order_year : int32,
+	total_price : double
+}
+
+create dataset Nations(NationType) primary key nation_key;
+create dataset Customers(CustomerType) primary key cust_key;
+create dataset Orders(OrderType) primary key order_key;
+
+create index CNationRefIdx on Customers(nation_ref);
+create index OCustRefIdx on Orders(cust_ref);
+
+// Since paths must be absolute, might have to do some edits here.
+load dataset Nations using localfs
+(("path"="127.0.0.1:///Users/julestestard/Projects/ResearchThoughts/15-04/asterix-experiments/generators/nations.adm"),("format"="adm"));
+
+load dataset Customers using localfs
+(("path"="127.0.0.1:///Users/julestestard/Projects/ResearchThoughts/15-04/asterix-experiments/generators/customers.adm"),("format"="adm"));
+
+load dataset Orders using localfs
+(("path"="127.0.0.1:///Users/julestestard/Projects/ResearchThoughts/15-04/asterix-experiments/generators/orders.adm"),("format"="adm"));
+
+insert into dataset Nations (
+	{ "nation_key" : 0, "nation_name" : "secret" }
+);

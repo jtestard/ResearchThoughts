@@ -1,0 +1,207 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{parskip}
+\usepackage{mathtools}
+\usepackage{color}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{MnSymbol,wasysym}
+\usepackage[noend,linesnumbered]{algorithm2e}
+\usepackage{setspace} 
+\usepackage{listings}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+\usepackage{amssymb}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color
+  basicstyle=\footnotesize,        % size of fonts used for the code
+  breaklines=true,                 % automatic line breaking only at whitespace
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  keywordstyle=\color{blue},       % keyword style
+  stringstyle=\color{mymauve},     % string literal style
+  numbers=left,
+  numberstyle=\tiny\color{mygray},
+}
+
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
+
+\begin{document}
+
+\title{Computing Cheung-Style Post-Conditions for arbitrary kernel language programs}
+\maketitle
+
+\section{Contains Example}
+
+This example is refered to in Alvin Cheung's paper but not analyzed in detail.
+
+Code Fragment (already converted to kernel language):
+
+\lstinputlisting[language=Java]{contains.java}
+
+In this example, this result variable is identified to be $listStudents$, and the \emph{translatable} post-condition we expect to find is :
+
+\begin{equation}
+\begin{split}
+& listStudents := \pi_{l_\pi} ( sort_{sid} ( \sigma_{\phi} ( students ))) \\
+& l_\pi : \text{ all fields of Student class} \\
+& \phi(e_{students}) = contains (e_{students}.sid, Query("\text{SELECT sid ... WHERE cid = 101}"))
+\end{split}
+\end{equation}
+
+Which yields the following SQL translation :
+
+\lstinputlisting[language=Java]{contains-sql.java}
+
+\subsection{Computing verification conditions}
+
+The verification conditions for the program above are as follows :
+
+\begin{table}[H]
+\centering
+\caption{Verification Conditions}
+\label{VC}
+\begin{tabular}[t]{|p{3cm}|p{12cm}|}
+\hline
+Initialization & $Inv(0, students, enrolled101, [])$ \\ \hline
+Loop Exit      & $i \geqslant size(students) \wedge Inv(i, students, enrolled101, listStudents) \rightarrow postCond(listStudents, students, enrolled101)
+$ \\ \hline
+Preservation   & 
+$ i < size(students) \wedge Inv(i, students, enrolled101, listStudents)
+\rightarrow (contains(get_i(students).sid,enrolled101) = True \wedge Inv(i+1, students, enrolled101, append(listStudents, get_i(student)) ) \vee (contains(get_i(students).sid,enrolled101) = False \wedge Inv(i+1, students, enrolled101, listStudents) )$
+\\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Computing Loop Invariants \& Post-Conditions}
+
+We know want to compute the values of the loop invariant ($Inv$) and the post condition ($postCond$). The system assumes that a loop invariant is a conjunction of predicates of the form $lv = e$, where $lv$ is a typed program variable and $e$ is an expression in TOR.
+
+There are only two program variables mutating in our program, the integer $i$ and the list $listStudents$.
+
+\begin{table}[H]
+\centering
+\caption{Loop Invariants \& Post-Conditions}
+\label{VC}
+\begin{tabular}[t]{|p{3cm}|p{10cm}|}
+\hline
+Loop Invariant &
+$i \leqslant size(students) \wedge listStudents = append( \pi_{l_\pi} (  \sigma_{\phi} ( top_i (students) )),  \pi_{l_\pi} ( \sigma_{\phi} ( get_i(students) )) ) $ \\ \hline
+Post-Condition &
+$listStudents = \pi_{l_\pi} (  \sigma_{\phi} ( students ))$ \\ \hline
+\end{tabular}
+\end{table}
+
+The post condition can then be transformed as follows by the \texttt{Trans} function :
+
+$$
+listStudents := \pi_{l_\pi} ( sort_{sid} ( \sigma_{\phi} ( students )))
+$$
+
+\pagebreak
+
+\section{Nested Result Experiment}
+
+This new example is a fictional example in which nested results are expected. 
+
+Code Fragment : 
+
+\lstinputlisting[language=Java]{nested.java}
+
+We would like to transform this code into this target SQL++ query :
+
+\lstinputlisting[language=Java]{nested-sql.java}
+
+\subsection{Verification Conditions}
+
+
+\begin{table}[H]
+\centering
+\caption{Outer Loop}
+\label{VC}
+\begin{tabular}[t]{|p{3cm}|p{12cm}|}
+\hline
+Initialization &
+$Outer(i, students, enrollments, [])$
+\\ \hline
+Loop Exit      & 
+$i \geqslant size(students) \wedge Outer (i, students, enrollments, listSC) \rightarrow postCond(listSC, students, enrollments) $
+\\ \hline
+Preservation   & 
+$i < size(students) \wedge Outer(i, students, enrollments, listSC)$
+\\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Inner Loop}
+\label{VC}
+\begin{tabular}[t]{|p{3cm}|p{12cm}|}
+\hline
+Initialization &
+$i < size(students) \wedge Outer(i, students, enrollments, listSC) \rightarrow Inner(i, 0, students, enrollments, [], listSC)$
+\\ \hline
+Loop Exit      & 
+$j \leqslant size(enrollments) \wedge Inner(i, j, students, enrollments, cids, listSC) \rightarrow Outer(i+1, students, enrollments, (get_i(students) :: cids :: []) :: listSC)$
+\\ \hline
+Preservation   & 
+$j < size(enrollments) \wedge Inner(i,j,students, enrollments, cids, listSC) \rightarrow (get_i(students).sid = get_j(enrollments).side \wedge Inner(i, j+1, students, enrollments, get_j(enrollments).cid :: cids, listSC) \vee (get_i(students).sid \ne get_j(enrollments).side \wedge Inner(i, j+1, students, enrollments, cids, listSC)$
+\\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Computing Post-Conditions and Invariants}
+
+We have a problem because TOR is not expressive enough to create invariants \& post-conditions that will validate all the verification conditions. 
+
+We suggest a solution in which we split the problem into two. We find loop invariants and post-conditions for the inner loop and outer loop independently, and we have two result variables, $cids$ for the inner loop and $listSC$ for the outer loop.
+
+\subsubsection{Inner Loop}
+
+In the inner loop, we replace the $students[i]$ variable by a constant. Therefore, the following condition can now be generated and validated :
+
+\begin{equation}
+\begin{split}
+cids & = \pi_{cid} ( \sigma_{\phi_2}  (sort_{sid} (enrollments) ) )\\
+& \text{where } \phi_2 (e_{enrollments}) := e_{enrollments}.sid = students[i].sid 
+\end{split}
+\end{equation}
+
+\subsubsection{Outer Loop}
+
+The outer loop is a little more complicated, because the TOR language does not offer any grouping operation or extended projection. This is why we suggest an extension to the TOR language, by extending the projection operator to create new fields for inner result variables (IRVs).
+
+The \textbf{projection}($\pi$) axiom is extended with the following judgement :
+
+$$
+\frac{r = h:t \text{ } f_i \in l \text{ } f_i = v, v \in IRV}{\pi_l (r) = \{ f_i = v \} : \pi_l (t) }
+$$
+
+The good thing is that we don't care if we change the TOR language in a way which violates some of the proofs in Cheung's paper, because we will provide our own translation to SQL++ later on (we don't have to rely on Cheung's definition of translatable expressions).
+
+We can now write the post-condition for the outer loop result variable :
+
+$$
+listSC = \pi_{\{f_i | f_i \in \text{Student} \} \cup cids } ( sort_{sid} (students) )
+$$
+
+\subsection{Merging into one statements}
+
+For this step, we assume we are able to find out which post-conditions are "related". We have to define some outer post-condition (OuterPC) and some inner post-condition (InnerPC). We can use IRVs to help us define which post-condition is "outer" and which is "inner". We could then combine the algebraic representation of the two PCs into some algebra (for example FORWARD algebra), from which it is easy to translate back to SQL++.
+
+\subsection{Translation to SQL++}
+
+\end{document}

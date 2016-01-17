@@ -10,13 +10,13 @@ LEFT OUTER JOIN (
 		  		   SELECT g.x.order_year AS order_year,
 		  		   		  g.x.list_price AS list_price
 		  		   FROM group AS g
-	 		       ORDER BY g.x.order_year DESC // All have the same id, no need to group by id
+	 		       ORDER BY g.x.order_year DESC 
 	   	    	   LIMIT 3
 		  		 ) AS N
           FROM (
 	      	  SELECT nid AS nid,
 	                 order_year AS order_year,
-	                 sql-sum(o.total_price) AS list_price
+	                 sum(o.total_price) AS list_price
 	          FROM  Orders AS o,
 	                Customers AS c,
 	                Nations AS n
@@ -29,7 +29,7 @@ LEFT OUTER JOIN (
 ON l.nation_key = r.nid;
 
 
-
+// All have the same id, no need to group by id
 Expect Output on 5 nations : 
 
 { "nation_key": 1i32, "nation_name": "Saint Lucia", "aggregates": [ { "order_year": 2015i32, "list_price": 6061.4800000000005d }, { "order_year": 2014i32, "list_price": 6731.2699999999995d }, { "order_year": 2013i32, "list_price": 6555.130000000001d } ] }

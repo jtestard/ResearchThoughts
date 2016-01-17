@@ -1,0 +1,8 @@
+use dataverse TinySocial;
+
+select user.name as uname, (
+	select element message.message
+	from FacebookMessages as message
+	where message.author-id = user.id
+  ) as messages
+from FacebookUsers as user;

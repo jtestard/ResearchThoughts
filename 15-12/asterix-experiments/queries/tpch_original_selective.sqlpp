@@ -1,0 +1,17 @@
+use dataverse GlobalMarketplace;
+
+SELECT  n.nation_key as nation_key,
+        n.nation_name as nation_name,
+        (
+          SELECT  order_year as order_year,
+                  sql-sum(o.total_price) as list_price
+          FROM  Orders as o,
+                Customers as c
+          WHERE o.cust_ref = c.cust_key and
+                c.nation_ref = n.nation_key
+          GROUP BY o.order_year as order_year
+          ORDER BY order_year DESC
+          LIMIT   3
+        ) as aggregates
+FROM Nations as n
+WHERE n.nation_key = 1;

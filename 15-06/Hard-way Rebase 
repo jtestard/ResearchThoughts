@@ -1,0 +1,28 @@
+Two options 
+
+### Hard-way Rebase 
+
+```
+git rebase -i master
+```
+
+Pick all commits rebase by hand, at the risk of redo-ing previous work.
+
+
+### Single commit rebase 
+squash all commits and then rebase. Given changes have happened, has a risk of "fucking up".
+
+Solution : go for hard-way rebase
+
+
+### Merge conflict notes
+
+Abstract class create feed statement
+
+#### Merge conflicts solved
+
+Next step : we redo changes in an "addition way".
+
+### Adding more stuff
+
+SQL++ support for csv and JSON output

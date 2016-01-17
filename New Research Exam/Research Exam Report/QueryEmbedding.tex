@@ -1,0 +1,15 @@
+Another approach taken by researchers has been to integrate seamlessly a declarative query facility within the application programming language, such as Microsoft's LINQ \cite{LINQ}. With LINQ, developers use Standard Query Operators (SQOs) to formulate queries against both application-resident and database-resident data. 
+
+\begin{Java}[basicstyle=\small, language=C#]
+var result = db.nations
+	.Where(n => selectedKeys.Contains(n.nation_key))
+	.Select(n => new {
+		db.
+	})
+\end{Java}
+
+In Beyond SQL, we can outline LINQ as an option which is also based on the nested relational data model. It allows fetching data from both databases and XML files. Research by Torsten Gurst shows that there as well, we have a query decorrelation problem. The decorrelation problem is caused by XML SQO, and how it drives the SQL query generation for its children SQOs. The solution found by the researchers was to use a technique called loop lifting, which converts list comprehesion of the form [form] into relational tables, on top of which relational algebra can be executed.
+
+
+The d
+

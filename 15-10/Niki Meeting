@@ -1,0 +1,14 @@
+### Meeting with Niki
+
+I want to discuss the idea of the mapping.
+
+I want to know what she thinks about this mapping :
+
+
+```
+Verification Conditions
+=> Loop Invariant + Post Condition in some logic
+=> Nested Relational Algebra
+```
+
+Basically, the question if she thinks its possible to do this mapping by expressing post-conditions in some logic which is equivalent to nested relational algebra.

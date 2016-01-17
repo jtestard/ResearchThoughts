@@ -1,0 +1,31 @@
+use dataverse GlobalMarketplace;
+
+SELECT  l.nation_key AS nation_key,
+        l.nation_name AS nation_name,
+        r.N AS aggregates
+FROM Nations AS l
+LEFT OUTER JOIN (
+		  SELECT nid AS nid,
+		  		 (
+		  		   SELECT g.x.order_year AS order_year,
+		  		   		  g.x.list_price AS list_price
+		  		   FROM group AS g
+	 		       ORDER BY g.x.order_year DESC // All have the same id, no need to group by id
+	   	    	   LIMIT 3
+		  		 ) AS N
+          FROM (
+	      	  SELECT nid AS nid,
+	                 order_year AS order_year,
+	                 sql-sum(o.total_price) AS list_price
+	          FROM  Orders AS o,
+	                Customers AS c,
+	                Nations AS n
+	    	  WHERE o.cust_ref = c.cust_key and
+	        	    c.nation_ref = n.nation_key and
+	        	    n.nation_key = 1
+	          GROUP BY n.nation_key AS nid, o.order_year AS order_year
+          ) AS x
+          GROUP BY x.nid AS nid
+        ) AS r
+ON l.nation_key = r.nid
+WHERE l.nation_key = 1;

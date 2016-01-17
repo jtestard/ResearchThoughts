@@ -1,0 +1,10 @@
+This paper describes the challenges posed by the impedance mismatch between application and database compilers in the typical web/database application architecture, and the holistic optimization solutions found in previous works. We show that the query synthesis and the query batching approaches can be applied on different kinds of imperative application programs, while declarative middleware such as FORWARD provide holistic optimization over both structured and semi-structured data, which becomes increasingly important with the advent of NoSQL databases.
+
+However, declarative middlewares are fundamentally limited by the fact that it requires a declarative programming paradigm in order to leverage its power query processing capabilities. Web developers, on the other hand, are used to program using imperative programming languages with ORMs. Our idea for future work would be to use program transformation techniques seen in section 3 to convert application programs written in a imperative style into SQL++ programs which can be run on the FORWARD middleware. According to past database research, a report over a database can be modeled by a single semi-structured query. Thus, if one is able to convert the entire data access made by an application program into a single SQL++ query, then the data access can be holistically optimized. The versatility of the query synthesis technique may proves to be a good candidate for such a venture. There are, however, at least two immediate hurdles to that effort:
+
+\begin{itemize}
+\item{\emph{Synthesize parameterized queries}: the current query synthesis algorithm does not synthesize parameterized queries, which would be necessary to take advantage of FORWARD's powerful query decorellation capabilities.}
+\item{\emph{Synthesize semi-structured data}: the TOR theory is defined over lists of records, while synthesizing semi-structured would require a theory capable of expressing both nesting and heterogeneity.}
+\end{itemize}
+
+Understanding how to overcome these obstacles is being currently investigated. 

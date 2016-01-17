@@ -1,0 +1,133 @@
+Query synthesis is a recent approach at MIT by Cheung  et al., implemented through the QBS algorithm \cite{alvin-cheung:2013aa,alvin-cheung:2013ab}. Instead of trying to target the parameter-at-a-time problem specifically, Cheung uses his technique to obtain the declarative intent of imperative programs which are equivalent to some relational operation. This approach had been previously explored in the context of selections and projections \cite{wiedermann:2008aa}, but Cheung provides the first solution which is applicable to joins and aggregations as well. This kind of optimization is particularly important for programs written using ORMs (Object-Relational Mapping), such as Hibernate \cite{hibernate} for Java, Rails for Ruby \cite{rails} and Django for Python \cite{django}. ORM layers tend to incite programmers to write code that iterates over collections of database records, performing imperatively operations such as join or filters. 
+
+\begin{figure*}[h]
+\begin{minipage}{0.45\textwidth}
+\centering
+\begin{Java}[basicstyle=\small]
+long getSumTotalForAlgeria() {
+  List customers = customerDao.getAllCustomers();
+  List orders = orderDao.getAllOrders();
+  long sum = 0;
+  for (Customer c : customers)
+    for (Order o : orders)
+      if (c.getCustKey() == o.getCustRef()
+          && c.getNationRef() == 1)
+        sum += o.getTotalPrice();
+  return sum;
+}
+\end{Java}
+\caption{Find total amount spent by customers from Algeria}
+\label{fig:algeria-initial}
+\end{minipage}\hfill
+\begin{minipage}{0.45\textwidth}
+\centering
+\begin{Java}[basicstyle=\small]
+getSumTotalForAlgeria() {
+   List customers = query("SELECT * FROM Customers");
+   List orders = query("SELECT * FROM Orders");
+   int result = 0; int i,j = 0;
+  while (i < size(customers)) { j=0;
+    while (j < size(orders)) {
+      if (customers[i].cust_key == orders[j].cust_ref && customers[i].nation_ref == 1)
+         result += o.total_price;
+     j++;
+     }
+   i++;
+   }
+   return result;
+}
+\end{Java}
+\caption{Fragment converted to kernel code}
+\label{fig:algeria-kernel}
+\end{minipage}\hfill
+\end{figure*}
+
+\begin{figure*}[h]
+\begin{minipage}{0.45\textwidth}
+\centering
+\textbf{Translated Code} :
+\begin{Java}[basicstyle=\small]
+  getSumTotalForAlgeria() {
+  return db.executeQuery(
+    "SELECT sum(total_price) as sumTotal " +
+    "FROM Orders o, Customers c " +
+    "WHERE o.cust_ref = c.cust_key " +
+    "AND c.nation_ref = 1 " +
+    "ORDER BY c.cust_key, o.cust_ref"
+  );
+}
+\end{Java}
+\caption{Post-Condition and code fragment converted to SQL}
+\label{fig:algeria-optimized}
+\end{minipage} \hfill
+\begin{minipage}{0.45\textwidth} 
+\centering
+\textbf{Post-Condition}:
+\begin{align}
+\begin{split}
+\centering
+& result = sum(\underset{l}{\pi}(\underset{\phi_0 \wedge \phi(1)}{\bowtie}(customers, orders) \\
+& \text{where} \\
+& \phi_0(e) : e_{nation\_ref} = 1 \\
+& \phi_1(e_c, e_o) : e_c.cust\_key = e_o.cust\_ref \\
+& l : total\_price
+\end{split}
+ \label{eq:postcondition}
+\end{align}
+\end{minipage} \hfill
+\end{figure*}
+
+The code on figure \ref{fig:algeria-initial} correspond to a java code fragment semantically equivalent to the query from example 1, expressed specifically for Algeria (the $nation\_key$ attribute for the Algeria nation is 1). This fragment makes use of the Hibernate \cite{hibernate} ORM. On lines 2-3 of figure \ref{fig:algeria-initial}, the entire customers and orders relations are requested from the database as Java lists. Unfortunately, the ORM library is unaware of the relational operations on lines 5-8, therefore cannot utilize indices or efficient join strategies from the database and has to fetch the contents of the entire order and customer relations. On line 10, the computed sum is returned. 
+
+The goal of query synthesis is to identify code fragments like the one on figure \ref{fig:algeria-initial} and transform them into the fragment shown on figure \ref{fig:algeria-optimized}. Cheung relies on the observation made by Iu et al. \cite{iu:2010aa} that if one can express a post-condition from imperative code in relational algebra, then that block can be translated into SQL. The goal is thus to derive loop invariants and a post-condition for the value of the variable returned at the end of the fragment (this variable is dubbed the \emph{result} variable). In our running example context, the result variable would be \texttt{sum}. 
+
+To express post-conditions and invariants, Cheung designed a theory which he called the Theory of Ordered Relations (TOR). This theory can be understood as relational algebra defined over lists instead of sets. Being able to reason about the order of records matters for two reasons : 
+\begin{enumerate}
+\item{The invariants may have to express partially constructed lists. In our running example, they must express the fact that the sum is computed from the first $i$ and $j$ records from $customers$ and $orders$, respectively.}
+\item{Nested loops may impose an order on the result list which might be used by the application, even when the original lists are ordered arbitrarily.}
+\end{enumerate}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{5cm}|p{10cm}|}
+\hline
+Inner loop preservation & $j < size(orders) \wedge \textbf{iInv}(i,j,customers, orders, result) \rightarrow (\theta(customers, orders) \wedge \textbf{iInv}(i,j+1, customers, orders, result +
+get_j(orders).total\_price)) \vee (!\theta(customers, orders) \wedge \textbf{iInv}(i,j+1, customers, orders, result))$ \\ \hline
+Outer Loop Exit & $i \geqslant size(customers) \vee \textbf{oInv}(i, customers, orders, result) \rightarrow \textbf{pCon}(result, customers, orders)$ \\ \hline
+\multicolumn{2}{|p{14cm}|}{where $\theta(customers, orders):= get_i(customers).cust\_key = get_j(orders).cust\_ref \wedge get_i(customers).nation\_ref = 1$} \\
+\hline
+\end{tabular}
+\caption{Two of the verification conditions for the running example}
+\label{table:vc}
+\end{table}
+
+\begin{figure*}[h]
+\centering
+\begin{align*}
+& \textbf{oInv}(i,customers,orders,result) : \\
+& i \leqslant size(customers) \wedge result = sum(\underset{l}{\pi}(\underset{\phi_0 \wedge \phi_1}{\bowtie}(top_i(customers), orders))) \\
+& \textbf{iInv}(i,j,customers,orders,result) : \\
+& i < size(customers) \wedge j \leqslant size(orders) \wedge result = sum( \\
+& \text{  } \underset{l}{\pi}(\underset{\phi_0 \wedge \phi_1}{\bowtie}(top_i(customers), orders))) \\
+& \text{  } + \underset{l}{\pi} (\underset{\phi_0 \wedge \phi1}{\bowtie}(get_i(customers), top_j(orders))) \\
+& \textbf{pCon}(customers,orders,result) : \\
+& result = sum(\underset{\phi_2}{\pi}(\underset{\phi_1 \wedge \phi_0}{\bowtie}(customers, orders))) \\
+& \text{where} \\
+& \phi_0(e) : e_{nation\_ref} = 1 \\
+& \phi_1(e_c, e_o) : e_c.cust\_key = e_o.cust\_ref \\
+& l : total\_price
+\end{align*}
+\caption{Invariants and post-condition found}
+\label{eq:found}
+\end{figure*}
+
+
+The transformation process happens in 5 steps :
+\begin{enumerate}
+\item{\emph{Identifying code fragments and conversion to kernel code}: note that this algorithm is applied on large-scale software projects, with multiple thousands of lines of code. To this effect, the algorithm starts by searching the software code for potential code transformation targets. Real-world programs introduce the complexity of aliasing and method calls, which may hide opportunities for conversion. For example, the code transformation in our running example would not be possible without knowing that the \texttt{getAllCustomers} and \texttt{getAllOrders} methods execute queries on the database and returned non-aliased lists of results. Once a target is found, it transforms the expression into simplified kernel language. The kernel language version is available on figure \ref{fig:algeria-kernel}. In the kernel language, aliases and method calls are inlined, and Hibernate data persistence methods are replaced with the \texttt{Query(...)} construct (lines 2-3 of figure \ref{fig:algeria-kernel}).}
+\item{\emph{Computing Verification Conditions}: as a next step, the verification conditions of the code fragment expressed in the kernel language are computed. These verification conditions are expressed using TOR and computed using standard techniques from axiomatic semantics. Two of the verification conditions generated by the algorithm are shown on table \ref{table:vc}. The inner and outer loops refer here to the loops on lines 5 and 6 of figure \ref{fig:algeria-kernel}, respectively. The first assertion presents an inductive argument that the inner loop invariant is preserved after one iteration of the nested loop. The $result$ variable is incremented by $get_j(orders).total\_price$ if the condition $\theta(customers, orders)$ is met, and remains unchanged otherwise. The second assertion ensures the post-condition will be true when the outer-loop terminates. } 
+\item{\emph{Produce and validate loop invariants and post-condition candidates}: notice that this verification conditions treat the loop invariants and post-condition as unknown predicates ("holes") over the variables currently in scope when the loop is entered. The goal of this algorithm is to fill the holes in a way which validates the verification conditions. This is done through constraint-based synthesis \cite{solar-lezama:2006aa}, which will search the space of possible completion of the holes for one that is valid according to a bounded model-checking procedure. The Z3 \cite{Z3} theorem prover is used for the validation. The valid candidates found for our running example are shown on figure \ref{eq:found}. The output invariant (\textbf{oInv}) ensures that at the $i$th iteration of the outer loop, the $result$ variable has a value equal to the sum of the order total prices for the first $i$ customers. The input invariant (\textbf{iInv}) ensures the top $j$ orders for the $i$th customer are added to the result variable. Finally the post-condition ensures the result variable is equal to the sum of all the order prices.}
+\item{\emph{Convert the post-condition into SQL}: the post-condition found can finally be translated to SQL using a set of  syntactic rules. Note the introduction of the \texttt{ORDER BY} clause on figure \ref{fig:algeria-optimized}. This clause is added in order to satisfy the ordering semantics of TOR expressions, although is completely useless in this situation, since only the sum is required. It is up to the query compiler to realize that the data does not need to be ordered in this situation, and remove the expensive sorting.}
+\end{enumerate}
+
+This approach has the advantage to be much more versatile than the query batching technique, allowing to transform a wide variety of code fragments, from joins to filters to aggregations. It is, however, not adapted to the parameter-at-a-time problem exactly, because the kernel language does not currently provide a way to represent parameterized queries nor does it provide a way to ship application data to the database.

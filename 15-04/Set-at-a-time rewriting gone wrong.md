@@ -46,9 +46,9 @@ SELECT	l.nation_name AS nation_name,
 FROM 	Nations AS l
 LEFT OUTER JOIN (
 	SELECT nid as nid,
-	       (SELECT ELEMENT g.x.spent FROM group AS g) as N
+	       group.x.spent as N
     FROM ( SELECT nid as nid,
-			    sum(c.amount_spent) AS spent
+			 sum(c.amount_spent) AS spent
 	  FROM Customers as c, Nations as n
 	  WHERE c.nation_ref = n.nation_key
 	  GROUP BY n.nation_key as nid
@@ -64,4 +64,4 @@ Result :
 
 \* : where `group.x.spent` evaluates to `(SELECT ELEMENT g.x.spent FROM group as g)`.
 
-It is not quite possible to generate exactly the decorrelation rewriting using SQL++, because the rewriting happens on algebra, and the decorrelation rewriting algebraic plan can't quite be rewritten using Asterix.
+It is not quite possible to generate exactly the decorrelation rewriting using SQL++, because the rewriting happens on algebra, and the decorrelation rewriting algebraic plan can't quite be rewritten using Asterix a;pme.
