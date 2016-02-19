@@ -183,4 +183,4 @@ We now describe each execution environment:
 |   table   	| Option 1 	| Option 2 	|
 |------	|----------	|----------	|
 | Pros 	|   w        	|    i      	|
-| Cons 	|   w       	|     j     	|
+| Cons 	|   w       	|     j     	| 	
