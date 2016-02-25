@@ -22,4 +22,4 @@ This is the case which has been most studied in previous work. Within the where 
 
 ### SELECT clause
 
-In the select clause
+Correlated subqueries may appear as select items in the `SELECT` clause. In traditional relational SQL, the `SELECT` clause subqueries output up to one tuple with a single attribute. In SQL++, those subqueries may have any form. In the case where the output has multiple rows/attributes, a nested collection is formed.

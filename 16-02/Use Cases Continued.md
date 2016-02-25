@@ -8,77 +8,31 @@ The choice of the example is important. It needs to show the saliant features of
 
 Examples :
 
-| Example | Operators of inner query | Correlation Relationship | Fancy Features |
-|-------------------|----------------------------------------|--------------------------|----------------|
-| Clerk query | uses sort but not group by | Many-To-Many | No |
-| Nation Query | Uses both GROUP BY and ORDER BY | One-To-Many | No |
-| Hour Query | Uses groupby aggregation, but not sort | Many-To-Many | UDF |
-| Clickstream Query | Uses both GROUP BY and ORDER BY | Many-To-Many | UDF |
+| Example           | Operators of inner query               | Correlation Relationship | Fancy Features | Number of relations in subquery |
+|-------------------|----------------------------------------|--------------------------|----------------|---------------------------------|
+| Clerk query       | uses sort but not group by             | Many-To-Many             | No             | 1                               |
+| Nation Query      | Uses both GROUP BY and ORDER BY        | One-To-Many              | No             | 2                               |
+| Hour Query        | Uses groupby aggregation, but not sort | One-To-Many              | UDF            | 1                               |
+| Clickstream Query | Uses both GROUP BY and ORDER BY        | Many-To-Many             | UDF            | 3                               |
+| Supplier query    | Uses both GROUP BY and ORDER BY        | Many-To-Many             | No             | 2                               |
 
-Based on the examples above, the Clickstream query is chosen.
+The supplier query is chosen because:
 
+ - It has both GROUP BY and ORDER BY in inner query.
+ - Its correlation relationship is a many-to-many
+ - It does not have any fancy features (UDFs...)
+ - The number of relations in the inner query is small (makes more concise plans on the paper).
 
-### Introduction Writing
-
-##### Analysis of ID IVM paper introduction
-
-**Paragraph 1** : explain what a materialized view and an incremental update are.
-
-**Paragraph 2** : introduce quickly prior work and describe succintly improvement over prior work.
-
-**Paragraph 3** : example showcasing the benefit of the improvement over the prior work (with figures).
-
-**Paragraph 4** : show caveat/drawback over improvement over prior work.
-
-**Paragraph 5** : outline and contribution of paper.
-
----
-
-#### Our introduction
-
-To present paragraphs 1 and 2 we have two alternatives:
-
-1) Present TAAT and NSAAT and show how NSAAT improves over TAAT
-
-2) Present TAAT but quickly move over to a discussion between NSAAT and DSAAT.
-
-3) Present all three strategies through a running example.   
-
-**Paragraph 1** :
-
- 1. Nested data is of particular importance in the big data world [Quote semi-structured databases which make use of nested data]
- - The semi-structured databases use a various set of languages. Prior work has shown that those languages can be modeled by SQL++.
- - SQL++ is a query language obtained by removing restrictions from SQL (the full SQL++ specification can be found here []). Of particular interest is the ability to have any kind of SQL query in the SELECT clause, which may cause nesting.
- - Show an example of a SQL++ query (running example) using simplified schema from TPC-BB benchmark.
-
-**Paragraph 2** :
-
- 1. This form of queriy presents opportunities for decorrelation.
- - Prior work has focused on the FROM and WHERE clause, where the output was purely relational. In the `SELECT` clause, prior work has focused on cases where the select clause outputs up to one tuple with a single attribute (the only form of subquery allowed in the SELECT clause in SQL).
- - We extend prior work by studying decorrelation on the SELECT clause when the output of the subquery may have multiple attributes and multiple columns.
-
-**Note** : Make sure point 3 is accurate; in particular with respect to DSAAT. Galindra-Joshi is a starting point. 
-
-**Paragraph 3** :
-
- - We present here two forms of query patterns which have the same attributes o 
-
-**Paragraph 4** :
-
-**Paragraph 5** :
-
-The introduction will have 
-
- 
-
-
-**Schema figure**
+### Supplier Query
 
 ```
-product(key, name)
-clickstream(product, time)
+SELECT s_supplierkey, s_name, (           SELECT p_brand, count(*) AS total           FROM part, partsupp           WHERE s_suppkey = ps_suppkey
+           AND ps_partkey = p_partkey           GROUP BY p_brand           ORDER BY total DESC           LIMIT 3       ) AS aggregatesFROM supplier LIMIT L;
 ```
 
+### Look at existing nested query example in document store use cases
+
+**Note**: in examples, we notice that correlated attributes are often keys. When they are not keys, they are often part of a bigger join.
 
 ### About R4 (DSAAT)
 

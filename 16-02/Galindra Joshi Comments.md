@@ -19,4 +19,15 @@ Class 2 correponds to the case where additional subexpressions are introduced (i
 
 **Question**: How does Galindra-Joshi propose to rewrite the exception case?
 
-Galindra Joshi rewrites the "exception" case using max1row (irrelevant in our case) and equivalences (1) and (2). Equivalence (8) and (9) are not so relevant in our case because reordering the GROUP BY NEST above the OUTER JOIN (in NSAAT) is never beneficial (cardinality of the output of the outer join is at least as much as the cardinality of expression r(p,T).
+ - Galindra Joshi rewrites the "exception" case using max1row (irrelevant in our case) and equivalences (1) and (2). Equivalence (8) and (9) are not so relevant in our case because reordering the GROUP BY NEST above the OUTER JOIN (in NSAAT) is never beneficial (cardinality of the output of the outer join is at least as much as the cardinality of expression r(p,T).
+ - Galindra's method is what we use to rewrite the `FROM` clause of the original query in both NSAAT and DSAAT cases.
+
+### Nested Relationaal Approach to Subqueries
+
+They use nested relational algebra to evaluate what they call linking predicates. Linking predicates are of the form: 
+
+```
+X theta (SOME/ANY/ALL) (Y)
+```
+
+where `Y` is a subquery. 
